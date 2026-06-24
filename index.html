@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>ZipZip Runner</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #333; touch-action: none; }
+        #gameCanvas { display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let player = { x: 1, lane: 1, speed: 5 };
+        let enemy = { x: 1, y: 100 };
+        let score = 0;
+
+        // Kontroller
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowLeft' && player.lane > 0) player.lane--;
+            if(e.key === 'ArrowRight' && player.lane < 2) player.lane++;
+        });
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Oyuncu
+            ctx.fillStyle = 'blue';
+            let x = (canvas.width/3) * player.lane + (canvas.width/6) - 25;
+            ctx.fillRect(x, canvas.height - 150, 50, 100);
+
+            // Polis (Kırmızı)
+            ctx.fillStyle = 'red';
+            ctx.fillRect(x, canvas.height - 100, 50, 100);
+
+            requestAnimationFrame(draw);
+        }
+        draw();
+    </script>
+</body>
+</html>
