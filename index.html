@@ -3,32 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Valorant Mobile Kesin Cozum</title>
+    <title>OLORANT MOBILE</title>
     <style>
         * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
         #canvas-container { width: 100%; height: 100%; position: absolute; z-index: 1; }
         
-        /* Ekran Katmanları */
-        .screen { position: absolute; width: 100%; height: 100%; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0f1923; color: #fff; padding: 20px; }
+        /* Yenilenen Giriş Ekranı - Jett Arka Planlı */
+        .screen { position: absolute; width: 100%; height: 100%; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
+        #setup-screen {
+            background: linear-gradient(rgba(15, 25, 35, 0.4), rgba(15, 25, 35, 0.7)), url('https://images.contentstack.io/v3/assets/blt731c14466d17e313/blt809fa8e6ebf5e954/6556e4099f64bfba5cf9fef1/VALORANT_Jett_Graffiti.jpg') no-repeat center center;
+            background-size: cover;
+        }
         .hidden { display: none !important; }
         
-        /* Ajan Seçimi Alanı Sabitlendi */
-        .agent-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0; width: 100%; max-width: 500px; }
-        .agent-card { background: #1f2326; padding: 12px 20px; border: 2px solid #333; border-radius: 4px; text-align: center; cursor: pointer; font-size: 14px; min-width: 90px; }
-        .agent-card.selected { border-color: #ff4655; background: #ff465522; font-weight: bold; }
-        .btn { padding: 12px 40px; background: #ff4655; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; }
+        /* Modern Başlatma Arayüzü */
+        .menu-card { background: rgba(15, 25, 35, 0.85); padding: 30px; border-radius: 8px; border: 2px solid #ff4655; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
+        .game-title { font-size: 42px; color: #ff4655; font-weight: 900; letter-spacing: 4px; margin-bottom: 5px; text-shadow: 0 0 10px rgba(255, 70, 85, 0.5); }
+        .game-subtitle { font-size: 14px; opacity: 0.8; margin-bottom: 25px; letter-spacing: 1px; }
+        
+        .btn { padding: 15px 50px; background: #ff4655; color: white; border: none; font-weight: bold; font-size: 18px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; transition: 0.2s; box-shadow: 0 4px 15px rgba(255, 70, 85, 0.4); }
+        .btn:active { transform: scale(0.95); background: #cc323f; }
         
         /* HUD Üst Alan */
         #hud-top { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; align-items: center; background: rgba(15,25,35,0.8); padding: 2px 15px; border-radius: 4px; border-bottom: 2px solid #ff4655; color: white; font-weight: bold; pointer-events: none; }
-        .team-score { font-size: 20px; padding: 0 10px; }
-        .blue-team { color: #30cdff; }
-        .red-team { color: #ff4655; }
         #timer { font-size: 18px; background: #111; padding: 3px 8px; border-radius: 3px; margin: 0 10px; }
-
-        /* Kill Feed */
-        #kill-feed { position: absolute; top: 10px; right: 10px; z-index: 5; display: flex; flex-direction: column; gap: 5px; pointer-events: none; }
-        .kill-item { background: rgba(0,0,0,0.7); padding: 4px 10px; border-radius: 3px; font-size: 11px; color: white; border-left: 4px solid #ff4655; }
 
         /* Crosshair */
         #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; z-index: 4; pointer-events: none; }
@@ -41,18 +40,12 @@
         .hud-stat { background: rgba(15,25,35,0.85); color: white; padding: 5px 15px; border-radius: 4px; border: 1px solid #333; font-weight: bold; font-size: 12px; }
         .stat-val { font-size: 18px; color: #ff4655; }
 
-        /* Yetenekler */
-        #ability-bar { position: absolute; bottom: 10px; left: 15px; z-index: 5; display: flex; gap: 5px; pointer-events: none; }
-        .ability-slot { width: 40px; height: 40px; background: rgba(15,25,35,0.9); border: 1px solid #555; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #fff; font-weight: bold; }
-
-        /* MOBİL DOKUNMATİK KONTROLLER */
+        /* MOBİL DOKUNMATİK KONTROLLER (YATAY OPTİMİZE) */
         .joystick-zone { position: absolute; bottom: 15px; left: 15px; width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 50%; z-index: 6; touch-action: none; border: 1px solid rgba(255,255,255,0.1); }
         .joystick-stick { position: absolute; top: 40px; left: 40px; width: 40px; height: 40px; background: rgba(255,255,255,0.3); border-radius: 50%; }
         
-        /* Sağ Kamera Alanı (Görünmez Panel) */
         #touch-look-zone { position: absolute; top: 0; right: 0; width: 65%; height: 100%; z-index: 2; touch-action: none; }
 
-        /* Sağ Aksiyon Butonları */
         .btn-game { position: absolute; z-index: 6; background: rgba(15,25,35,0.85); color: white; border: 1px solid #444; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 50%; touch-action: none; font-size: 12px; }
         .btn-game:active { background: #ff4655; }
         #btn-shoot { bottom: 20px; right: 120px; width: 75px; height: 75px; background: rgba(255, 70, 85, 0.7); font-size: 14px; border: 2px solid #ff4655; }
@@ -72,39 +65,32 @@
     <div id="touch-look-zone"></div>
 
     <div id="setup-screen" class="screen">
-        <h2 style="font-size: 24px; color: #ff4655; letter-spacing: 1px;">VALORANT MOBILE</h2>
-        <p style="font-size: 13px; opacity: 0.7; margin-top: 5px;">Bir Ajan Seçip Maçı Başlatın</p>
-        <div class="agent-grid" id="agent-selector"></div>
-        <button class="btn" id="start-match-btn">MAÇI BAŞLAT</button>
+        <div class="menu-card">
+            <h1 class="game-title">OLORANT</h1>
+            <p class="game-subtitle">MOBILE EDITION</p>
+            <button class="btn" id="start-match-btn">OYUNA BAŞLA</button>
+        </div>
     </div>
 
     <div id="round-screen" class="screen hidden">
         <div id="round-title">RAUNT 1</div>
     </div>
 
-    <div id="mvp-screen" class="screen hidden">
-        <h2 id="winner-team" style="color: #ffb700;">MAVİ TAKIM KAZANDI</h2>
-        <p id="mvp-name" style="margin: 10px 0; font-size: 20px;">MVP: JETT</p>
-        <button class="btn" onclick="location.reload()">Yeniden Oyna</button>
+    <div id="mvp-screen" class="screen hidden" style="background: rgba(15,25,35,0.95)">
+        <h2 id="winner-team" style="color: #ffb700; font-size: 28px;">MAVİ TAKIM KAZANDI</h2>
+        <p id="mvp-name" style="margin: 15px 0; font-size: 22px; font-weight: bold;">MVP: JETT</p>
+        <button class="btn" onclick="location.reload()">YENİDEN BAŞLAT</button>
     </div>
 
     <div id="hud-top">
-        <span class="blue-team" id="score-blue">0</span>
+        <span style="color: #30cdff;" id="score-blue">0</span>
         <span style="opacity:0.5; margin: 0 5px;">-</span>
-        <span class="red-team" id="score-red">0</span>
+        <span style="color: #ff4655;" id="score-red">0</span>
         <div id="timer">100</div>
         <div id="alive-text" style="font-size: 12px;">5 VS 5</div>
     </div>
 
-    <div id="kill-feed"></div>
     <div id="crosshair"><div class="ch-line ch-h"></div><div class="ch-line ch-v"></div></div>
-
-    <div id="ability-bar">
-        <div class="ability-slot" id="ab-1">Q</div>
-        <div class="ability-slot" id="ab-2">E</div>
-        <div class="ability-slot" id="ab-3">C</div>
-        <div class="ability-slot" id="ab-4" style="border-color:#ffb700;">X</div>
-    </div>
 
     <div id="hud-bottom">
         <div class="hud-stat">CAN <span class="stat-val" id="hp-display">100</span></div>
@@ -122,21 +108,13 @@
 
     <script>
         const WEAPONS = {
-            KNIFE: { name: "Knife", damage: 50, recoil: 0, clip: 1, reload: 0, hsMult: 1 },
-            CLASSIC: { name: "Classic", damage: 26, recoil: 1, clip: 12, reload: 1500, hsMult: 3 },
-            SPECTRE: { name: "Spectre", damage: 26, recoil: 1.1, clip: 30, reload: 2000, hsMult: 3 },
-            VANDAL: { name: "Vandal", damage: 40, recoil: 1.6, clip: 25, reload: 2500, hsMult: 4 },
-            OPERATOR: { name: "Operator", damage: 150, recoil: 4, clip: 5, reload: 3500, hsMult: 3 }
+            KNIFE: { name: "Knife", damage: 50, recoil: 0, clip: 1, reload: 0 },
+            CLASSIC: { name: "Classic", damage: 26, recoil: 1, clip: 12, reload: 1500 },
+            SPECTRE: { name: "Spectre", damage: 26, recoil: 1.1, clip: 30, reload: 2000 },
+            VANDAL: { name: "Vandal", damage: 40, recoil: 1.6, clip: 25, reload: 2500 },
+            OPERATOR: { name: "Operator", damage: 150, recoil: 4, clip: 5, reload: 3500 }
         };
 
-        const AGENTS = [
-            { name: "Jett", ab: "Dash", color: 0x66cdaa },
-            { name: "Phoenix", ab: "Flash", color: 0xff4500 },
-            { name: "Sova", ab: "Recon", color: 0x1e90ff },
-            { name: "Reyna", ab: "Heal", color: 0xba55d3 }
-        ];
-
-        let selectedAgent = AGENTS[0];
         let scoreBlue = 0, scoreRed = 0, currentRound = 1;
         let matchActive = false, roundActive = false, roundTimer = 100;
         let killsRegistry = {};
@@ -149,21 +127,7 @@
         let ammoCount = WEAPONS.VANDAL.clip;
         let isADS = false, isCrouching = false;
 
-        // Ajanları listeleme mekanizması esnek hale getirildi
-        const selector = document.getElementById("agent-selector");
-        AGENTS.forEach((agent, i) => {
-            const card = document.createElement("div");
-            card.className = `agent-card ${i === 0 ? 'selected' : ''}`;
-            card.innerHTML = `<b>${agent.name}</b><br><span style="font-size:9px;opacity:0.6;">${agent.ab}</span>`;
-            card.onclick = () => {
-                document.querySelectorAll(".agent-card").forEach(c => c.classList.remove("selected"));
-                card.classList.add("selected");
-                selectedAgent = agent;
-            };
-            selector.appendChild(card);
-        });
-
-        // Butona basıldığında doğrudan sahne oluşturuluyor
+        // Pixel-io Tarzı Doğrudan Başlama Tetikleyicisi
         document.getElementById("start-match-btn").onclick = () => {
             document.getElementById("setup-screen").classList.add("hidden");
             initGame();
@@ -178,7 +142,7 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.getElementById("canvas-container").appendChild(renderer.domElement);
 
-            const ambient = new THREE.AmbientLight(0xffffff, 0.7);
+            const ambient = new THREE.AmbientLight(0xffffff, 0.8);
             scene.add(ambient);
             const sun = new THREE.DirectionalLight(0xffffff, 0.6);
             sun.position.set(10, 30, 10);
@@ -202,9 +166,9 @@
 
             const boxGeo = new THREE.BoxGeometry(10, 8, 10);
             const boxMat = new THREE.MeshStandardMaterial({ color: 0x3a404a });
-            for(let i = 0; i < 6; i++) {
+            for(let i = 0; i < 8; i++) {
                 const mesh = new THREE.Mesh(boxGeo, boxMat);
-                mesh.position.set((Math.random() - 0.5) * 80, 4, (Math.random() - 0.5) * 80);
+                mesh.position.set((Math.random() - 0.5) * 100, 4, (Math.random() - 0.5) * 100);
                 scene.add(mesh);
             }
         }
@@ -214,25 +178,24 @@
             killsRegistry = {};
 
             playerObj = {
-                isBot: false, team: "BLUE", name: "Sen", agent: selectedAgent,
-                hp: 100, pos: new THREE.Vector3(0, 2, 40), weapon: WEAPONS[currentWeaponKey]
+                isBot: false, team: "BLUE", name: "Sen",
+                hp: 100, pos: new THREE.Vector3(0, 2, 45), weapon: WEAPONS[currentWeaponKey]
             };
             entities.push(playerObj);
             killsRegistry[playerObj.name] = 0;
 
             for (let i = 1; i <= 5; i++) {
-                let botAgent = AGENTS[Math.floor(Math.random() * AGENTS.length)];
                 let name = `Düşman_${i}`;
                 killsRegistry[name] = 0;
 
                 const bodyGeo = new THREE.CylinderGeometry(0.6, 0.6, 2, 8);
                 const bodyMat = new THREE.MeshStandardMaterial({ color: 0xff4655 });
                 const mesh = new THREE.Mesh(bodyGeo, bodyMat);
-                mesh.position.set((i - 3) * 12, 1, -40);
+                mesh.position.set((i - 3) * 15, 1, -45);
                 scene.add(mesh);
 
                 entities.push({
-                    isBot: true, team: "RED", name: name, agent: botAgent,
+                    isBot: true, team: "RED", name: name,
                     hp: 100, pos: mesh.position, mesh: mesh, weapon: WEAPONS.VANDAL, aiTimer: 0
                 });
             }
@@ -251,14 +214,14 @@
                 if(e.isBot) {
                     e.hp = 100;
                     e.mesh.visible = true;
-                    e.pos.set((Math.random() - 0.5) * 50, 1, -40);
+                    e.pos.set((Math.random() - 0.5) * 60, 1, -45);
                 }
             });
 
             const screen = document.getElementById("round-screen");
             document.getElementById("round-title").innerText = `RAUNT ${currentRound}`;
             screen.classList.remove("hidden");
-            setTimeout(() => screen.classList.add("hidden"), 1500);
+            setTimeout(() => screen.classList.add("hidden"), 1200);
 
             updateHUD();
         }
@@ -281,7 +244,7 @@
                 document.getElementById("mvp-name").innerText = `MVP: ${mvp} (${maxKills} Leş)`;
             } else {
                 currentRound++;
-                setTimeout(startRound, 2000);
+                setTimeout(startRound, 1500);
             }
         }
 
@@ -290,7 +253,7 @@
             ammoCount--;
             updateHUD();
 
-            playerRotation.pitch += 0.02;
+            playerRotation.pitch += 0.015;
 
             let raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
@@ -305,19 +268,9 @@
                     if (hitBot.hp <= 0) {
                         hitBot.mesh.visible = false;
                         killsRegistry[playerObj.name]++;
-                        pushKillFeed(playerObj.name, hitBot.name);
                     }
                 }
             }
-        }
-
-        function pushKillFeed(k, v) {
-            const f = document.getElementById("kill-feed");
-            const i = document.createElement("div");
-            i.className = "kill-item";
-            i.innerText = `${k} ⚔️ ${v}`;
-            f.appendChild(i);
-            setTimeout(() => i.remove(), 3000);
         }
 
         function setupControls() {
@@ -363,8 +316,8 @@
                 let dx = t.clientX - lastLook.x;
                 let dy = t.clientY - lastLook.y;
 
-                playerRotation.yaw -= dx * 0.006;
-                playerRotation.pitch -= dy * 0.006;
+                playerRotation.yaw -= dx * 0.005;
+                playerRotation.pitch -= dy * 0.005;
                 playerRotation.pitch = Math.max(-Math.PI/2.5, Math.min(Math.PI/2.5, playerRotation.pitch));
 
                 lastLook = { x: t.clientX, y: t.clientY };
@@ -415,4 +368,48 @@
             if (playerObj.hp > 0) {
                 camera.rotation.order = "YXZ";
                 camera.rotation.y = playerRotation.yaw;
-                camera.rot
+                camera.rotation.x = playerRotation.pitch;
+
+                let forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+                let side = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+                forward.y = 0; side.y = 0;
+                forward.normalize(); side.normalize();
+
+                playerObj.pos.addScaledVector(forward, moveInput.y * delta * 10);
+                playerObj.pos.addScaledVector(side, moveInput.x * delta * 10);
+                camera.position.copy(playerObj.pos);
+            }
+
+            let enemiesAlive = 0;
+            entities.forEach(e => {
+                if (e.isBot && e.hp > 0) {
+                    enemiesAlive++;
+                    e.aiTimer += delta;
+                    if(e.aiTimer > 1) {
+                        e.aiTimer = 0;
+                        if(Math.random() < 0.15 && playerObj.hp > 0) {
+                            playerObj.hp -= 10;
+                            updateHUD();
+                            if(playerObj.hp <= 0) endRound("RED");
+                        }
+                    }
+                }
+            });
+            document.getElementById("alive-text").innerText = `1 VS ${enemiesAlive}`;
+
+            if(enemiesAlive === 0 && roundActive) endRound("BLUE");
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            if(camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+    </script>
+</body>
+            </html>
+        
