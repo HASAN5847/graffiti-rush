@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Valorant Mobile Yatay Ekran</title>
+    <title>Valorant Mobile Kesin Cozum</title>
     <style>
         * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
         #canvas-container { width: 100%; height: 100%; position: absolute; z-index: 1; }
         
         /* Ekran Katmanları */
-        .screen { position: absolute; width: 100%; height: 100%; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0f1923; color: #fff; }
+        .screen { position: absolute; width: 100%; height: 100%; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0f1923; color: #fff; padding: 20px; }
         .hidden { display: none !important; }
         
-        /* Ajan Seçimi */
-        .agent-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; width: 80%; max-width: 600px; }
-        .agent-card { background: #1f2326; padding: 10px; border: 2px solid #333; border-radius: 4px; text-align: center; cursor: pointer; font-size: 14px; }
-        .agent-card.selected { border-color: #ff4655; background: #ff465522; }
-        .btn { margin-top: 15px; padding: 10px 30px; background: #ff4655; color: white; border: none; font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase; }
+        /* Ajan Seçimi Alanı Sabitlendi */
+        .agent-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0; width: 100%; max-width: 500px; }
+        .agent-card { background: #1f2326; padding: 12px 20px; border: 2px solid #333; border-radius: 4px; text-align: center; cursor: pointer; font-size: 14px; min-width: 90px; }
+        .agent-card.selected { border-color: #ff4655; background: #ff465522; font-weight: bold; }
+        .btn { padding: 12px 40px; background: #ff4655; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; }
         
         /* HUD Üst Alan */
         #hud-top { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; align-items: center; background: rgba(15,25,35,0.8); padding: 2px 15px; border-radius: 4px; border-bottom: 2px solid #ff4655; color: white; font-weight: bold; pointer-events: none; }
@@ -44,15 +44,13 @@
         /* Yetenekler */
         #ability-bar { position: absolute; bottom: 10px; left: 15px; z-index: 5; display: flex; gap: 5px; pointer-events: none; }
         .ability-slot { width: 40px; height: 40px; background: rgba(15,25,35,0.9); border: 1px solid #555; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #fff; font-weight: bold; }
-        .ability-slot.ult { border-color: #ffb700; }
 
-        /* YATAY EKRAN MOBİL DOKUNMATİK KONTROLLER */
-        /* Sol Hareket Alanı */
+        /* MOBİL DOKUNMATİK KONTROLLER */
         .joystick-zone { position: absolute; bottom: 15px; left: 15px; width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 50%; z-index: 6; touch-action: none; border: 1px solid rgba(255,255,255,0.1); }
         .joystick-stick { position: absolute; top: 40px; left: 40px; width: 40px; height: 40px; background: rgba(255,255,255,0.3); border-radius: 50%; }
         
-        /* Sağ Kamera Alanı (Görünmez Dokunmatik Panel) */
-        #touch-look-zone { position: absolute; top: 0; right: 0; width: 60%; height: 100%; z-index: 2; touch-action: none; }
+        /* Sağ Kamera Alanı (Görünmez Panel) */
+        #touch-look-zone { position: absolute; top: 0; right: 0; width: 65%; height: 100%; z-index: 2; touch-action: none; }
 
         /* Sağ Aksiyon Butonları */
         .btn-game { position: absolute; z-index: 6; background: rgba(15,25,35,0.85); color: white; border: 1px solid #444; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 50%; touch-action: none; font-size: 12px; }
@@ -74,10 +72,10 @@
     <div id="touch-look-zone"></div>
 
     <div id="setup-screen" class="screen">
-        <h2 style="font-size: 20px; color: #ff4655;">VALORANT MOBILE</h2>
-        <p style="font-size: 12px; opacity: 0.7;">Yatay Tutup Bir Ajan Seçin</p>
+        <h2 style="font-size: 24px; color: #ff4655; letter-spacing: 1px;">VALORANT MOBILE</h2>
+        <p style="font-size: 13px; opacity: 0.7; margin-top: 5px;">Bir Ajan Seçip Maçı Başlatın</p>
         <div class="agent-grid" id="agent-selector"></div>
-        <button class="btn" id="start-match-btn">Maçı Başlat</button>
+        <button class="btn" id="start-match-btn">MAÇI BAŞLAT</button>
     </div>
 
     <div id="round-screen" class="screen hidden">
@@ -94,7 +92,7 @@
         <span class="blue-team" id="score-blue">0</span>
         <span style="opacity:0.5; margin: 0 5px;">-</span>
         <span class="red-team" id="score-red">0</span>
-        <div id="timer">1:40</div>
+        <div id="timer">100</div>
         <div id="alive-text" style="font-size: 12px;">5 VS 5</div>
     </div>
 
@@ -105,7 +103,7 @@
         <div class="ability-slot" id="ab-1">Q</div>
         <div class="ability-slot" id="ab-2">E</div>
         <div class="ability-slot" id="ab-3">C</div>
-        <div class="ability-slot ult" id="ab-4">X</div>
+        <div class="ability-slot" id="ab-4" style="border-color:#ffb700;">X</div>
     </div>
 
     <div id="hud-bottom">
@@ -151,7 +149,7 @@
         let ammoCount = WEAPONS.VANDAL.clip;
         let isADS = false, isCrouching = false;
 
-        // Seçim Ekranı Hazırlığı
+        // Ajanları listeleme mekanizması esnek hale getirildi
         const selector = document.getElementById("agent-selector");
         AGENTS.forEach((agent, i) => {
             const card = document.createElement("div");
@@ -165,10 +163,10 @@
             selector.appendChild(card);
         });
 
+        // Butona basıldığında doğrudan sahne oluşturuluyor
         document.getElementById("start-match-btn").onclick = () => {
             document.getElementById("setup-screen").classList.add("hidden");
-            // Performans takılmasını önlemek için başlatmayı mikro gecikmeyle çağırıyoruz
-            setTimeout(initGame, 50);
+            initGame();
         };
 
         function initGame() {
@@ -202,7 +200,6 @@
             floor.rotation.x = -Math.PI / 2;
             scene.add(floor);
 
-            // Basit Kutu Yapıları
             const boxGeo = new THREE.BoxGeometry(10, 8, 10);
             const boxMat = new THREE.MeshStandardMaterial({ color: 0x3a404a });
             for(let i = 0; i < 6; i++) {
@@ -223,7 +220,6 @@
             entities.push(playerObj);
             killsRegistry[playerObj.name] = 0;
 
-            // 5 Düşman Bot Ekleme
             for (let i = 1; i <= 5; i++) {
                 let botAgent = AGENTS[Math.floor(Math.random() * AGENTS.length)];
                 let name = `Düşman_${i}`;
@@ -294,7 +290,6 @@
             ammoCount--;
             updateHUD();
 
-            // Atış esnasında hafif yukarı tepme (Recoil)
             playerRotation.pitch += 0.02;
 
             let raycaster = new THREE.Raycaster();
@@ -325,9 +320,7 @@
             setTimeout(() => i.remove(), 3000);
         }
 
-        // KONTROL AYARLARI (YATAY MODEL OPTİMİZASYONU)
         function setupControls() {
-            // Sol Taraf Hareket (Joystick)
             const zone = document.getElementById("joy-zone");
             const stick = document.getElementById("joy-stick");
             let joyActive = false, startPos = { x: 0, y: 0 };
@@ -356,7 +349,6 @@
                 moveInput = { x: 0, y: 0 };
             });
 
-            // Sağ Taraf Ekran Kaydırma (Kamera Bakışı)
             const lookZone = document.getElementById("touch-look-zone");
             let lastLook = { x: 0, y: 0 }, lookActive = false;
 
@@ -371,9 +363,8 @@
                 let dx = t.clientX - lastLook.x;
                 let dy = t.clientY - lastLook.y;
 
-                playerRotation.yaw -= dx * 0.005;
-                playerRotation.pitch -= dy * 0.005;
-                // Bakış sınırlandırma (Gökkuşağı veya tamamen yere bakmayı önleme)
+                playerRotation.yaw -= dx * 0.006;
+                playerRotation.pitch -= dy * 0.006;
                 playerRotation.pitch = Math.max(-Math.PI/2.5, Math.min(Math.PI/2.5, playerRotation.pitch));
 
                 lastLook = { x: t.clientX, y: t.clientY };
@@ -381,7 +372,6 @@
 
             lookZone.addEventListener("touchend", () => { lookActive = false; });
 
-            // Buton Dokunmatik Eşleşmeleri
             document.getElementById("btn-shoot").addEventListener("touchstart", (e) => { e.preventDefault(); shoot(); });
             document.getElementById("btn-reload").addEventListener("touchstart", (e) => {
                 e.preventDefault();
@@ -409,9 +399,20 @@
             document.getElementById("hp-display").innerText = playerObj.hp;
             document.getElementById("weapon-display").innerText = playerObj.weapon.name.toUpperCase();
             document.getElementById("ammo-display").innerText = `${ammoCount}/${playerObj.weapon.clip * 3}`;
-            document.getElementById("ab-1").innerText = playerObj.agent.ab.substring(0,4).toUpperCase();
         }
 
-        // FRAME DÖNGÜSÜ
         const clock = new THREE.Clock();
-  
+        function animate() {
+            requestAnimationFrame(animate);
+            if (!matchActive) return;
+
+            const delta = clock.getDelta();
+
+            roundTimer -= delta;
+            if(roundTimer <= 0 && roundActive) { endRound("RED"); }
+            document.getElementById("timer").innerText = Math.floor(roundTimer);
+
+            if (playerObj.hp > 0) {
+                camera.rotation.order = "YXZ";
+                camera.rotation.y = playerRotation.yaw;
+                camera.rot
