@@ -3,53 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OLORANT MOBILE</title>
+    <title>HOLARANT HYBRID</title>
     <style>
         * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; cursor: default; }
         #canvas-container { width: 100%; height: 100%; position: absolute; z-index: 1; }
         
-        /* Giriş Ekranı */
         .screen { position: absolute; width: 100%; height: 100%; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
-        #setup-screen {
-            background: linear-gradient(rgba(15, 25, 35, 0.4), rgba(15, 25, 35, 0.7)), url('https://images.contentstack.io/v3/assets/blt731c14466d17e313/blt809fa8e6ebf5e954/6556e4099f64bfba5cf9fef1/VALORANT_Jett_Graffiti.jpg') no-repeat center center;
-            background-size: cover;
-        }
+        #setup-screen { background: #0f1923; }
         .hidden { display: none !important; }
         
-        .menu-card { background: rgba(15, 25, 35, 0.85); padding: 30px; border-radius: 8px; border: 2px solid #ff4655; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
-        .game-title { font-size: 42px; color: #ff4655; font-weight: 900; letter-spacing: 4px; margin-bottom: 5px; text-shadow: 0 0 10px rgba(255, 70, 85, 0.5); }
-        .game-subtitle { font-size: 14px; opacity: 0.8; margin-bottom: 25px; letter-spacing: 1px; }
+        .menu-card { background: #172330; padding: 35px; border-radius: 12px; border: 3px solid #ff4655; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        .game-title { font-size: 46px; color: #ff4655; font-weight: 900; letter-spacing: 5px; margin-bottom: 5px; text-shadow: 0 0 15px rgba(255, 70, 85, 0.6); }
+        .game-subtitle { font-size: 14px; opacity: 0.7; margin-bottom: 30px; letter-spacing: 2px; }
         
-        .btn { padding: 15px 50px; background: #ff4655; color: white; border: none; font-weight: bold; font-size: 18px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; box-shadow: 0 4px 15px rgba(255, 70, 85, 0.4); }
+        .btn { padding: 18px 60px; background: #ff4655; color: white; border: none; font-weight: bold; font-size: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; box-shadow: 0 5px 20px rgba(255, 70, 85, 0.5); }
+        .btn:active { background: #cc323f; }
         
-        /* HUD Üst Alan */
         #hud-top { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; align-items: center; background: rgba(15,25,35,0.8); padding: 5px 20px; border-radius: 4px; border-bottom: 2px solid #ff4655; color: white; font-weight: bold; pointer-events: none; }
         #timer { font-size: 20px; background: #111; padding: 3px 10px; border-radius: 3px; margin: 0 15px; color: #ffb700; }
 
-        /* Karakter Avatar Göstergesi */
-        #char-avatar { position: absolute; top: 15px; left: 15px; z-index: 5; width: 55px; height: 55px; background: url('https://images.contentstack.io/v3/assets/blt731c14466d17e313/blt910eff5743a40496/5ebd8279bc892d3023dbf7b7/V_AGENTS_KeyArt_Jett.png') no-repeat center top; background-size: 130%; border: 2px solid #30cdff; border-radius: 50%; background-color: #1f2326; }
-
-        /* Crosshair */
         #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; z-index: 4; pointer-events: none; }
         .ch-line { position: absolute; background: #00ff00; }
         .ch-h { top: 5px; left: 0; width: 12px; height: 2px; }
         .ch-v { top: 0; left: 5px; width: 2px; height: 12px; }
 
-        /* HUD Alt Alan (Görseller Eklendi) */
         #hud-bottom { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; gap: 10px; pointer-events: none; align-items: flex-end; }
         .hud-stat { background: rgba(15,25,35,0.85); color: white; padding: 8px 15px; border-radius: 4px; border: 1px solid #333; font-weight: bold; font-size: 12px; display: flex; flex-direction: column; justify-content: center; }
         .stat-val { font-size: 20px; color: #ff4655; }
         
-        /* Silah Görsel Kartı */
-        #weapon-card { background: rgba(15,25,35,0.85); border: 1px solid #333; border-radius: 4px; padding: 5px 15px; display: flex; flex-direction: column; align-items: center; min-width: 130px; }
-        #weapon-img { width: 100px; height: 32px; background: url('https://images.contentstack.io/v3/assets/blt731c14466d17e313/blt924e390c58e11a37/5ebd9093b160bc3d2047da03/V_Arsenal_KeyArt_Vandal.png') no-repeat center center; background-size: contain; margin-bottom: 2px; }
+        #weapon-card { background: rgba(15,25,35,0.85); border: 1px solid #333; border-radius: 4px; padding: 10px 20px; display: flex; flex-direction: column; align-items: center; min-width: 130px; }
 
-        /* Mobil Kontroller */
+        /* Mobil Bölge Katmanları (PC için görünmez engelleme yapmaz) */
         .joystick-zone { position: absolute; bottom: 15px; left: 15px; width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 50%; z-index: 6; touch-action: none; border: 1px solid rgba(255,255,255,0.1); }
         .joystick-stick { position: absolute; top: 40px; left: 40px; width: 40px; height: 40px; background: rgba(255,255,255,0.3); border-radius: 50%; }
         
-        #touch-look-zone { position: absolute; top: 0; right: 0; width: 65%; height: 100%; z-index: 2; touch-action: none; }
+        #touch-look-zone { position: absolute; top: 0; right: 0; width: 100%; height: 100%; z-index: 2; touch-action: none; }
 
         .btn-game { position: absolute; z-index: 6; background: rgba(15,25,35,0.85); color: white; border: 1px solid #444; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 50%; touch-action: none; font-size: 12px; }
         .btn-game:active, .btn-game.active { background: #ff4655; border-color: #fff; }
@@ -61,6 +50,8 @@
         #btn-switch { bottom: 200px; right: 30px; width: 40px; height: 40px; font-size: 9px; background: #222; }
 
         #round-screen { background: rgba(0,0,0,0.8); font-size: 24px; font-weight: bold; pointer-events: none; z-index: 12; }
+        
+        #pc-info { position: absolute; top: 15px; left: 15px; color: #fff; font-size: 11px; z-index: 5; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 4px; pointer-events: none; }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
@@ -69,11 +60,10 @@
     <div id="canvas-container"></div>
     <div id="touch-look-zone"></div>
 
-    <!-- Giriş Ekranı -->
     <div id="setup-screen" class="screen">
         <div class="menu-card">
-            <h1 class="game-title">OLORANT</h1>
-            <p class="game-subtitle">MOBILE EDITION</p>
+            <h1 class="game-title">HOLARANT</h1>
+            <p class="game-subtitle">MOBILE & PC EDITION</p>
             <button class="btn" id="start-match-btn">OYUNA BAŞLA</button>
         </div>
     </div>
@@ -84,12 +74,11 @@
 
     <div id="mvp-screen" class="screen hidden" style="background: rgba(15,25,35,0.95)">
         <h2 id="winner-team" style="color: #ffb700; font-size: 28px;">MAVİ TAKIM KAZANDI</h2>
-        <p id="mvp-name" style="margin: 15px 0; font-size: 22px; font-weight: bold;">MVP: JETT</p>
+        <p id="mvp-name" style="margin: 15px 0; font-size: 22px; font-weight: bold;">MVP: PLAYER</p>
         <button class="btn" onclick="location.reload()">YENİDEN BAŞLAT</button>
     </div>
 
-    <!-- HUD Elemanları -->
-    <div id="char-avatar"></div>
+    <div id="pc-info">PC Kontrolleri: WASD | Sol Tık: Ateş | Sağ Tık: ADS | C: Eğil | R: Yenile | F: Silah Değiştir</div>
 
     <div id="hud-top">
         <span style="color: #30cdff; font-size: 20px;" id="score-blue">0</span>
@@ -105,12 +94,11 @@
         <div class="hud-stat">CAN <span class="stat-val" id="hp-display">100</span></div>
         <div class="hud-stat">ZIRH <span class="stat-val" style="color:#30cdff">50</span></div>
         <div id="weapon-card">
-            <div id="weapon-img"></div>
-            <div style="color: #fff; font-size: 11px; font-weight: bold;"><span id="weapon-display">VANDAL</span> <span id="ammo-display" style="color:#ffb700; margin-left:5px;">25/75</span></div>
+            <div style="color: #fff; font-size: 14px; font-weight: bold;"><span id="weapon-display">VANDAL</span></div>
+            <div style="color:#ffb700; font-size: 12px; margin-top: 2px;" id="ammo-display">25/75</div>
         </div>
     </div>
 
-    <!-- Dokunmatik Tuşlar -->
     <div class="joystick-zone" id="joy-zone"><div class="joystick-stick" id="joy-stick"></div></div>
     <div class="btn-game" id="btn-shoot">ATEŞ</div>
     <div class="btn-game" id="btn-ads">ADS</div>
@@ -120,10 +108,32 @@
     <div class="btn-game" id="btn-switch">SİLAH</div>
 
     <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            if (type === 'shoot') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(320, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.12);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime); osc.start(); osc.stop(audioCtx.currentTime + 0.12);
+            } else if (type === 'crouch') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime); osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+            } else if (type === 'reload') {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime); osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            } else if (type === 'round') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime); osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+            }
+        }
+
         const WEAPONS = {
-            VANDAL: { name: "Vandal", damage: 40, clip: 25, img: 'https://images.contentstack.io/v3/assets/blt731c14466d17e313/blt924e390c58e11a37/5ebd9093b160bc3d2047da03/V_Arsenal_KeyArt_Vandal.png' },
-            SPECTRE: { name: "Spectre", damage: 26, clip: 30, img: 'https://images.contentstack.io/v3/assets/blt731c14466d17e313/blt49d8fc62b2e8fb72/5ebd90934d4ba33221df7ad5/V_Arsenal_KeyArt_Spectre.png' },
-            OPERATOR: { name: "Operator", damage: 150, clip: 5, img: 'https://images.contentstack.io/v3/assets/blt731c14466d17e313/bltb08b6d0e3ecdf72d/5ebd9093b9e4a30240ab13d1/V_Arsenal_KeyArt_Operator.png' }
+            VANDAL: { name: "Vandal", damage: 40, clip: 25 },
+            SPECTRE: { name: "Spectre", damage: 26, clip: 30 },
+            OPERATOR: { name: "Operator", damage: 150, clip: 5 }
         };
 
         let scoreBlue = 0, scoreRed = 0, currentRound = 1;
@@ -133,266 +143,186 @@
         let scene, camera, renderer, playerObj;
         let entities = [];
         let moveInput = { x: 0, y: 0 };
+        let pcKeys = { w: false, a: false, s: false, d: false };
         let playerRotation = { yaw: 0, pitch: 0 };
         let currentWeaponKey = "VANDAL";
         let ammoCount = WEAPONS.VANDAL.clip;
         let isADS = false, isCrouching = false;
         let targetCamHeight = 2.0;
 
-        document.getElementById("start-match-btn").onclick = () => {
+        const startBtn = document.getElementById("start-match-btn");
+        const triggerStart = () => {
+            if (matchActive) return;
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
             document.getElementById("setup-screen").classList.add("hidden");
             initGame();
         };
+        startBtn.addEventListener("click", triggerStart);
+        startBtn.addEventListener("touchstart", (e) => { e.preventDefault(); triggerStart(); });
 
         function initGame() {
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x161d24); // Taktiksel koyu mavi-gri arka plan
+            scene.background = new THREE.Color(0x161d24);
 
             camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.getElementById("canvas-container").appendChild(renderer.domElement);
 
-            const ambient = new THREE.AmbientLight(0xffffff, 0.9);
-            scene.add(ambient);
-            const sun = new THREE.DirectionalLight(0xffffff, 0.5);
-            sun.position.set(30, 60, 20);
-            scene.add(sun);
+            const ambient = new THREE.AmbientLight(0xffffff, 0.9); scene.add(ambient);
+            const sun = new THREE.DirectionalLight(0xffffff, 0.5); sun.position.set(30, 60, 20); scene.add(sun);
 
-            buildMap();
-            spawnEntities();
-            setupControls();
+            buildMap(); spawnEntities(); setupMobileControls(); setupPCControls();
 
-            matchActive = true;
-            startRound();
-            animate();
+            matchActive = true; startRound(); animate();
         }
 
         function buildMap() {
-            // Harita büyütüldü: 400x400 yapıldı ve renkli çimen/taktik zemin görünümü eklendi
             const floorGeo = new THREE.PlaneGeometry(400, 400);
             const floorMat = new THREE.MeshStandardMaterial({ color: 0x2c3b47 }); 
-            const floor = new THREE.Mesh(floorGeo, floorMat);
-            floor.rotation.x = -Math.PI / 2;
-            scene.add(floor);
+            const floor = new THREE.Mesh(floorGeo, floorMat); floor.rotation.x = -Math.PI / 2; scene.add(floor);
 
-            // Renkli kutular (Siyah beyaz pürüzü kaldırıldı)
             const boxColors = [0xff4655, 0x30cdff, 0xffb700, 0x4fffa7, 0xba55d3];
             const boxGeo = new THREE.BoxGeometry(14, 12, 14);
-            
-            for(let i = 0; i < 20; i++) {
+            for(let i = 0; i < 25; i++) {
                 let randomColor = boxColors[Math.floor(Math.random() * boxColors.length)];
-                const boxMat = new THREE.MeshStandardMaterial({ color: randomColor, roughness: 0.4 });
+                const boxMat = new THREE.MeshStandardMaterial({ color: randomColor, roughness: 0.3 });
                 const mesh = new THREE.Mesh(boxGeo, boxMat);
-                mesh.position.set((Math.random() - 0.5) * 250, 6, (Math.random() - 0.5) * 250);
+                mesh.position.set((Math.random() - 0.5) * 260, 6, (Math.random() - 0.5) * 260);
                 scene.add(mesh);
             }
         }
 
         function spawnEntities() {
-            entities = [];
-            killsRegistry = {};
-
-            playerObj = {
-                isBot: false, team: "BLUE", name: "Sen",
-                hp: 100, pos: new THREE.Vector3(0, targetCamHeight, 90), weapon: WEAPONS[currentWeaponKey]
-            };
-            entities.push(playerObj);
-            killsRegistry[playerObj.name] = 0;
+            entities = []; killsRegistry = {};
+            playerObj = { isBot: false, team: "BLUE", name: "Sen", hp: 100, pos: new THREE.Vector3(0, targetCamHeight, 90), weapon: WEAPONS[currentWeaponKey] };
+            entities.push(playerObj); killsRegistry[playerObj.name] = 0;
 
             for (let i = 1; i <= 5; i++) {
-                let name = `Düşman_${i}`;
-                killsRegistry[name] = 0;
-
+                let name = `Düşman_${i}`; killsRegistry[name] = 0;
                 const bodyGeo = new THREE.CylinderGeometry(0.8, 0.8, 2.5, 10);
                 const bodyMat = new THREE.MeshStandardMaterial({ color: 0xff4655 });
-                const mesh = new THREE.Mesh(bodyGeo, bodyMat);
-                mesh.position.set((i - 3) * 25, 1.25, -90);
-                scene.add(mesh);
-
-                entities.push({
-                    isBot: true, team: "RED", name: name,
-                    hp: 100, pos: mesh.position, mesh: mesh, weapon: WEAPONS.VANDAL, aiTimer: 0
-                });
+                const mesh = new THREE.Mesh(bodyGeo, bodyMat); mesh.position.set((i - 3) * 25, 1.25, -90); scene.add(mesh);
+                entities.push({ isBot: true, team: "RED", name: name, hp: 100, pos: mesh.position, mesh: mesh, weapon: WEAPONS.VANDAL, aiTimer: 0 });
             }
         }
 
         function startRound() {
-            roundActive = true;
-            roundTimer = 180; // 3 Dakika Raunt Süresi
-
-            playerObj.hp = 100;
-            playerObj.pos.set(0, targetCamHeight, 90);
-            camera.position.copy(playerObj.pos);
+            roundActive = true; roundTimer = 180; playSound('round');
+            playerObj.hp = 100; playerObj.pos.set(0, targetCamHeight, 90); camera.position.copy(playerObj.pos);
             ammoCount = playerObj.weapon.clip;
-
-            entities.forEach(e => {
-                if(e.isBot) {
-                    e.hp = 100;
-                    e.mesh.visible = true;
-                    e.pos.set((Math.random() - 0.5) * 150, 1.25, -90);
-                }
-            });
-
-            const screen = document.getElementById("round-screen");
-            document.getElementById("round-title").innerText = `RAUNT ${currentRound}`;
-            screen.classList.remove("hidden");
-            setTimeout(() => screen.classList.add("hidden"), 1200);
-
+            entities.forEach(e => { if(e.isBot) { e.hp = 100; e.mesh.visible = true; e.pos.set((Math.random() - 0.5) * 160, 1.25, -90); } });
+            const screen = document.getElementById("round-screen"); document.getElementById("round-title").innerText = `RAUNT ${currentRound}`;
+            screen.classList.remove("hidden"); setTimeout(() => screen.classList.add("hidden"), 1200);
             updateHUD();
         }
 
         function endRound(winner) {
-            roundActive = false;
-            if (winner === "BLUE") scoreBlue++; else scoreRed++;
-
-            document.getElementById("score-blue").innerText = scoreBlue;
-            document.getElementById("score-red").innerText = scoreRed;
-
+            roundActive = false; if (winner === "BLUE") scoreBlue++; else scoreRed++;
+            document.getElementById("score-blue").innerText = scoreBlue; document.getElementById("score-red").innerText = scoreRed;
             if (scoreBlue >= 3 || scoreRed >= 3) {
-                matchActive = false;
-                document.getElementById("mvp-screen").classList.remove("hidden");
+                matchActive = false; document.getElementById("mvp-screen").classList.remove("hidden");
                 let maxKills = 0, mvp = playerObj.name;
-                for(let k in killsRegistry) {
-                    if(killsRegistry[k] >= maxKills) { maxKills = killsRegistry[k]; mvp = k; }
-                }
+                for(let k in killsRegistry) { if(killsRegistry[k] >= maxKills) { maxKills = killsRegistry[k]; mvp = k; } }
                 document.getElementById("winner-team").innerText = winner === "BLUE" ? "MAVİ TAKIM KAZANDI" : "KIRMIZI TAKIM KAZANDI";
                 document.getElementById("mvp-name").innerText = `MVP: ${mvp} (${maxKills} Leş)`;
-            } else {
-                currentRound++;
-                setTimeout(startRound, 1500);
-            }
+            } else { currentRound++; setTimeout(startRound, 1500); }
         }
 
         function shoot() {
             if (ammoCount <= 0) return;
-            ammoCount--;
-            updateHUD();
+            ammoCount--; updateHUD(); playSound('shoot');
+            playerRotation.pitch += 0.012;
 
-            playerRotation.pitch += 0.015;
-
-            let raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-
+            let raycaster = new THREE.Raycaster(); raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
             let targets = entities.filter(e => e.isBot && e.hp > 0).map(e => e.mesh);
             let hits = raycaster.intersectObjects(targets);
-
             if (hits.length > 0) {
                 let hitBot = entities.find(e => e.mesh === hits[0].object);
                 if (hitBot) {
                     hitBot.hp -= playerObj.weapon.damage;
-                    if (hitBot.hp <= 0) {
-                        hitBot.mesh.visible = false;
-                        killsRegistry[playerObj.name]++;
-                    }
+                    if (hitBot.hp <= 0) { hitBot.mesh.visible = false; killsRegistry[playerObj.name]++; }
                 }
             }
         }
 
-        function setupControls() {
-            // Joystick
-            const zone = document.getElementById("joy-zone");
-            const stick = document.getElementById("joy-stick");
+        function toggleCrouch() {
+            isCrouching = !isCrouching; playSound('crouch');
+            targetCamHeight = isCrouching ? 1.0 : 2.0;
+            const cBtn = document.getElementById("btn-crouch");
+            if(isCrouching) cBtn.classList.add("active"); else cBtn.classList.remove("active");
+        }
+
+        function reloadWeapon() {
+            ammoCount = playerObj.weapon.clip; playSound('reload'); updateHUD();
+        }
+
+        function switchWeapon() {
+            let keys = Object.keys(WEAPONS);
+            let next = (keys.indexOf(currentWeaponKey) + 1) % keys.length;
+            currentWeaponKey = keys[next]; playerObj.weapon = WEAPONS[currentWeaponKey];
+            ammoCount = playerObj.weapon.clip; playSound('reload'); updateHUD();
+        }
+
+        function toggleADS() {
+            isADS = !isADS; camera.fov = isADS ? 35 : 70; camera.updateProjectionMatrix();
+        }
+
+        // Mobil Dokunmatik Sistem
+        function setupMobileControls() {
+            const zone = document.getElementById("joy-zone"); const stick = document.getElementById("joy-stick");
             let joyActive = false, startPos = { x: 0, y: 0 };
-
-            zone.addEventListener("touchstart", (e) => {
-                joyActive = true;
-                startPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            });
-
+            zone.addEventListener("touchstart", (e) => { joyActive = true; startPos = { x: e.touches[0].clientX, y: e.touches[0].clientY }; });
             window.addEventListener("touchmove", (e) => {
-                if (!joyActive) return;
-                let t = e.touches[0];
-                let dx = t.clientX - startPos.x;
-                let dy = t.clientY - startPos.y;
-                let d = Math.hypot(dx, dy);
-                if (d > 35) { dx = (dx / d) * 35; dy = (dy / d) * 35; }
-                
-                stick.style.transform = `translate(${dx}px, ${dy}px)`;
-                moveInput.x = dx / 35;
-                moveInput.y = -dy / 35;
+                if (!joyActive) return; let t = e.touches[0]; let dx = t.clientX - startPos.x; let dy = t.clientY - startPos.y;
+                let d = Math.hypot(dx, dy); if (d > 35) { dx = (dx / d) * 35; dy = (dy / d) * 35; }
+                stick.style.transform = `translate(${dx}px, ${dy}px)`; moveInput.x = dx / 35; moveInput.y = -dy / 35;
             });
+            window.addEventListener("touchend", () => { joyActive = false; stick.style.transform = "translate(0px, 0px)"; moveInput = { x: 0, y: 0 }; });
 
-            window.addEventListener("touchend", () => {
-                joyActive = false;
-                stick.style.transform = "translate(0px, 0px)";
-                moveInput = { x: 0, y: 0 };
-            });
-
-            // Bakış alanı
             const lookZone = document.getElementById("touch-look-zone");
             let lastLook = { x: 0, y: 0 }, lookActive = false;
-
-            lookZone.addEventListener("touchstart", (e) => {
-                lookActive = true;
-                lastLook = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            });
-
+            lookZone.addEventListener("touchstart", (e) => { lookActive = true; lastLook = { x: e.touches[0].clientX, y: e.touches[0].clientY }; });
             lookZone.addEventListener("touchmove", (e) => {
-                if (!lookActive) return;
-                let t = e.touches[0];
-                let dx = t.clientX - lastLook.x;
-                let dy = t.clientY - lastLook.y;
-
-                playerRotation.yaw -= dx * 0.005;
-                playerRotation.pitch -= dy * 0.005;
+                if (!lookActive) return; let t = e.touches[0]; let dx = t.clientX - lastLook.x; let dy = t.clientY - lastLook.y;
+                playerRotation.yaw -= dx * 0.005; playerRotation.pitch -= dy * 0.005;
                 playerRotation.pitch = Math.max(-Math.PI/2.5, Math.min(Math.PI/2.5, playerRotation.pitch));
-
                 lastLook = { x: t.clientX, y: t.clientY };
             });
-
             lookZone.addEventListener("touchend", () => { lookActive = false; });
 
-            // Eğilme Mekanizması Tamamen Düzeltildi
-            const crouchBtn = document.getElementById("btn-crouch");
-            crouchBtn.addEventListener("touchstart", (e) => {
-                e.preventDefault();
-                isCrouching = !isCrouching;
-                if(isCrouching) {
-                    targetCamHeight = 1.0; // Kamera yüksekliği yarıya iner
-                    crouchBtn.classList.add("active");
-                } else {
-                    targetCamHeight = 2.0; // Kamera yüksekliği normale döner
-                    crouchBtn.classList.remove("active");
+            document.getElementById("btn-crouch").addEventListener("touchstart", (e) => { e.preventDefault(); toggleCrouch(); });
+            document.getElementById("btn-shoot").addEventListener("touchstart", (e) => { e.preventDefault(); shoot(); });
+            document.getElementById("btn-reload").addEventListener("touchstart", (e) => { e.preventDefault(); reloadWeapon(); });
+            document.getElementById("btn-switch").addEventListener("touchstart", (e) => { e.preventDefault(); switchWeapon(); });
+            document.getElementById("btn-ads").addEventListener("touchstart", (e) => { e.preventDefault(); toggleADS(); });
+        }
+
+        // PC Klavye & Fare Sistemi
+        function setupPCControls() {
+            window.addEventListener('keydown', (e) => {
+                let k = e.key.toLowerCase();
+                if(k === 'w') pcKeys.w = true; if(k === 's') pcKeys.s = true;
+                if(k === 'a') pcKeys.a = true; if(k === 'd') pcKeys.d = true;
+                if(k === 'r') reloadWeapon(); if(k === 'c') toggleCrouch(); if(k === 'f') switchWeapon();
+            });
+            window.addEventListener('keyup', (e) => {
+                let k = e.key.toLowerCase();
+                if(k === 'w') pcKeys.w = false; if(k === 's') pcKeys.s = false;
+                if(k === 'a') pcKeys.a = false; if(k === 'd') pcKeys.d = false;
+            });
+
+            // Ekrana tıklayınca fareyi kilitleme (PC için kusursuz FPS dönüşü)
+            const lookZone = document.getElementById("touch-look-zone");
+            lookZone.addEventListener('click', () => { if(matchActive) lookZone.requestPointerLock(); });
+            
+            window.addEventListener('mousemove', (e) => {
+                if (document.pointerLockElement === lookZone) {
+                    playerRotation.yaw -= e.movementX * 0.0025;
+                    playerRotation.pitch -= e.movementY * 0.0025;
+                    playerRotation.pitch = Math.max(-Math.PI/2.5, Math.min(Math.PI/2.5, playerRotation.pitch));
                 }
             });
 
-            document.getElementById("btn-shoot").addEventListener("touchstart", (e) => { e.preventDefault(); shoot(); });
-            document.getElementById("btn-reload").addEventListener("touchstart", (e) => {
-                e.preventDefault();
-                ammoCount = playerObj.weapon.clip;
-                updateHUD();
-            });
-
-            // Silah Değiştirme ve Görsel Güncelleme
-            document.getElementById("btn-switch").addEventListener("touchstart", (e) => {
-                e.preventDefault();
-                let keys = Object.keys(WEAPONS);
-                let next = (keys.indexOf(currentWeaponKey) + 1) % keys.length;
-                currentWeaponKey = keys[next];
-                playerObj.weapon = WEAPONS[currentWeaponKey];
-                ammoCount = playerObj.weapon.clip;
-                
-                // Dinamik HUD görsel değişimi
-                document.getElementById("weapon-img").style.backgroundImage = `url('${playerObj.weapon.img}')`;
-                updateHUD();
-            });
-
-            document.getElementById("btn-ads").addEventListener("touchstart", (e) => {
-                e.preventDefault();
-                isADS = !isADS;
-                camera.fov = isADS ? 35 : 70;
-                camera.updateProjectionMatrix();
-            });
-        }
-
-        function updateHUD() {
-            document.getElementById("hp-display").innerText = playerObj.hp;
-            document.getElementById("weapon-display").innerText = playerObj.weapon.name.toUpperCase();
-            document.getElementById("ammo-display").innerText = `${ammoCount}/${playerObj.weapon.clip * 3}`;
-        }
-
-        const clock = new THREE.Clock();
-        function animate() {
-            requestAnimationFrame(animate);
-     
+            window.addEventListener('mousedown', (e) => {
+                i
