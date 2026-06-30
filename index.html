@@ -9,7 +9,7 @@
         body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
         #canvas-container { width: 100%; height: 100%; position: absolute; z-index: 1; }
         
-        /* Yenilenen Giriş Ekranı - Jett Arka Planlı */
+        /* Giriş Ekranı */
         .screen { position: absolute; width: 100%; height: 100%; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
         #setup-screen {
             background: linear-gradient(rgba(15, 25, 35, 0.4), rgba(15, 25, 35, 0.7)), url('https://images.contentstack.io/v3/assets/blt731c14466d17e313/blt809fa8e6ebf5e954/6556e4099f64bfba5cf9fef1/VALORANT_Jett_Graffiti.jpg') no-repeat center center;
@@ -17,17 +17,18 @@
         }
         .hidden { display: none !important; }
         
-        /* Modern Başlatma Arayüzü */
         .menu-card { background: rgba(15, 25, 35, 0.85); padding: 30px; border-radius: 8px; border: 2px solid #ff4655; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
         .game-title { font-size: 42px; color: #ff4655; font-weight: 900; letter-spacing: 4px; margin-bottom: 5px; text-shadow: 0 0 10px rgba(255, 70, 85, 0.5); }
         .game-subtitle { font-size: 14px; opacity: 0.8; margin-bottom: 25px; letter-spacing: 1px; }
         
-        .btn { padding: 15px 50px; background: #ff4655; color: white; border: none; font-weight: bold; font-size: 18px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; transition: 0.2s; box-shadow: 0 4px 15px rgba(255, 70, 85, 0.4); }
-        .btn:active { transform: scale(0.95); background: #cc323f; }
+        .btn { padding: 15px 50px; background: #ff4655; color: white; border: none; font-weight: bold; font-size: 18px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; box-shadow: 0 4px 15px rgba(255, 70, 85, 0.4); }
         
         /* HUD Üst Alan */
-        #hud-top { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; align-items: center; background: rgba(15,25,35,0.8); padding: 2px 15px; border-radius: 4px; border-bottom: 2px solid #ff4655; color: white; font-weight: bold; pointer-events: none; }
-        #timer { font-size: 18px; background: #111; padding: 3px 8px; border-radius: 3px; margin: 0 10px; }
+        #hud-top { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; align-items: center; background: rgba(15,25,35,0.8); padding: 5px 20px; border-radius: 4px; border-bottom: 2px solid #ff4655; color: white; font-weight: bold; pointer-events: none; }
+        #timer { font-size: 20px; background: #111; padding: 3px 10px; border-radius: 3px; margin: 0 15px; color: #ffb700; }
+
+        /* Karakter Avatar Göstergesi */
+        #char-avatar { position: absolute; top: 15px; left: 15px; z-index: 5; width: 55px; height: 55px; background: url('https://images.contentstack.io/v3/assets/blt731c14466d17e313/blt910eff5743a40496/5ebd8279bc892d3023dbf7b7/V_AGENTS_KeyArt_Jett.png') no-repeat center top; background-size: 130%; border: 2px solid #30cdff; border-radius: 50%; background-color: #1f2326; }
 
         /* Crosshair */
         #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; z-index: 4; pointer-events: none; }
@@ -35,23 +36,27 @@
         .ch-h { top: 5px; left: 0; width: 12px; height: 2px; }
         .ch-v { top: 0; left: 5px; width: 2px; height: 12px; }
 
-        /* HUD Alt Alan */
-        #hud-bottom { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; gap: 10px; pointer-events: none; }
-        .hud-stat { background: rgba(15,25,35,0.85); color: white; padding: 5px 15px; border-radius: 4px; border: 1px solid #333; font-weight: bold; font-size: 12px; }
-        .stat-val { font-size: 18px; color: #ff4655; }
+        /* HUD Alt Alan (Görseller Eklendi) */
+        #hud-bottom { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; gap: 10px; pointer-events: none; align-items: flex-end; }
+        .hud-stat { background: rgba(15,25,35,0.85); color: white; padding: 8px 15px; border-radius: 4px; border: 1px solid #333; font-weight: bold; font-size: 12px; display: flex; flex-direction: column; justify-content: center; }
+        .stat-val { font-size: 20px; color: #ff4655; }
+        
+        /* Silah Görsel Kartı */
+        #weapon-card { background: rgba(15,25,35,0.85); border: 1px solid #333; border-radius: 4px; padding: 5px 15px; display: flex; flex-direction: column; align-items: center; min-width: 130px; }
+        #weapon-img { width: 100px; height: 32px; background: url('https://images.contentstack.io/v3/assets/blt731c14466d17e313/blt924e390c58e11a37/5ebd9093b160bc3d2047da03/V_Arsenal_KeyArt_Vandal.png') no-repeat center center; background-size: contain; margin-bottom: 2px; }
 
-        /* MOBİL DOKUNMATİK KONTROLLER (YATAY OPTİMİZE) */
+        /* Mobil Kontroller */
         .joystick-zone { position: absolute; bottom: 15px; left: 15px; width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 50%; z-index: 6; touch-action: none; border: 1px solid rgba(255,255,255,0.1); }
         .joystick-stick { position: absolute; top: 40px; left: 40px; width: 40px; height: 40px; background: rgba(255,255,255,0.3); border-radius: 50%; }
         
         #touch-look-zone { position: absolute; top: 0; right: 0; width: 65%; height: 100%; z-index: 2; touch-action: none; }
 
         .btn-game { position: absolute; z-index: 6; background: rgba(15,25,35,0.85); color: white; border: 1px solid #444; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 50%; touch-action: none; font-size: 12px; }
-        .btn-game:active { background: #ff4655; }
+        .btn-game:active, .btn-game.active { background: #ff4655; border-color: #fff; }
         #btn-shoot { bottom: 20px; right: 120px; width: 75px; height: 75px; background: rgba(255, 70, 85, 0.7); font-size: 14px; border: 2px solid #ff4655; }
         #btn-ads { bottom: 105px; right: 130px; width: 45px; height: 45px; font-size: 10px; }
         #btn-jump { bottom: 85px; right: 20px; width: 50px; height: 50px; font-size: 10px; }
-        #btn-crouch { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 10px; }
+        #btn-crouch { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 10px; background: #222; }
         #btn-reload { bottom: 145px; right: 25px; width: 45px; height: 45px; font-size: 11px; background: #333; }
         #btn-switch { bottom: 200px; right: 30px; width: 40px; height: 40px; font-size: 9px; background: #222; }
 
@@ -64,6 +69,7 @@
     <div id="canvas-container"></div>
     <div id="touch-look-zone"></div>
 
+    <!-- Giriş Ekranı -->
     <div id="setup-screen" class="screen">
         <div class="menu-card">
             <h1 class="game-title">OLORANT</h1>
@@ -82,12 +88,15 @@
         <button class="btn" onclick="location.reload()">YENİDEN BAŞLAT</button>
     </div>
 
+    <!-- HUD Elemanları -->
+    <div id="char-avatar"></div>
+
     <div id="hud-top">
-        <span style="color: #30cdff;" id="score-blue">0</span>
-        <span style="opacity:0.5; margin: 0 5px;">-</span>
-        <span style="color: #ff4655;" id="score-red">0</span>
-        <div id="timer">100</div>
-        <div id="alive-text" style="font-size: 12px;">5 VS 5</div>
+        <span style="color: #30cdff; font-size: 20px;" id="score-blue">0</span>
+        <span style="opacity:0.5; margin: 0 10px;">-</span>
+        <span style="color: #ff4655; font-size: 20px;" id="score-red">0</span>
+        <div id="timer">180</div>
+        <div id="alive-text" style="font-size: 14px; color: #aaa;">5 VS 5</div>
     </div>
 
     <div id="crosshair"><div class="ch-line ch-h"></div><div class="ch-line ch-v"></div></div>
@@ -95,9 +104,13 @@
     <div id="hud-bottom">
         <div class="hud-stat">CAN <span class="stat-val" id="hp-display">100</span></div>
         <div class="hud-stat">ZIRH <span class="stat-val" style="color:#30cdff">50</span></div>
-        <div class="hud-stat"><span id="weapon-display">VANDAL</span> <span id="ammo-display" style="color:#ffb700; margin-left:5px;">30/90</span></div>
+        <div id="weapon-card">
+            <div id="weapon-img"></div>
+            <div style="color: #fff; font-size: 11px; font-weight: bold;"><span id="weapon-display">VANDAL</span> <span id="ammo-display" style="color:#ffb700; margin-left:5px;">25/75</span></div>
+        </div>
     </div>
 
+    <!-- Dokunmatik Tuşlar -->
     <div class="joystick-zone" id="joy-zone"><div class="joystick-stick" id="joy-stick"></div></div>
     <div class="btn-game" id="btn-shoot">ATEŞ</div>
     <div class="btn-game" id="btn-ads">ADS</div>
@@ -108,15 +121,13 @@
 
     <script>
         const WEAPONS = {
-            KNIFE: { name: "Knife", damage: 50, recoil: 0, clip: 1, reload: 0 },
-            CLASSIC: { name: "Classic", damage: 26, recoil: 1, clip: 12, reload: 1500 },
-            SPECTRE: { name: "Spectre", damage: 26, recoil: 1.1, clip: 30, reload: 2000 },
-            VANDAL: { name: "Vandal", damage: 40, recoil: 1.6, clip: 25, reload: 2500 },
-            OPERATOR: { name: "Operator", damage: 150, recoil: 4, clip: 5, reload: 3500 }
+            VANDAL: { name: "Vandal", damage: 40, clip: 25, img: 'https://images.contentstack.io/v3/assets/blt731c14466d17e313/blt924e390c58e11a37/5ebd9093b160bc3d2047da03/V_Arsenal_KeyArt_Vandal.png' },
+            SPECTRE: { name: "Spectre", damage: 26, clip: 30, img: 'https://images.contentstack.io/v3/assets/blt731c14466d17e313/blt49d8fc62b2e8fb72/5ebd90934d4ba33221df7ad5/V_Arsenal_KeyArt_Spectre.png' },
+            OPERATOR: { name: "Operator", damage: 150, clip: 5, img: 'https://images.contentstack.io/v3/assets/blt731c14466d17e313/bltb08b6d0e3ecdf72d/5ebd9093b9e4a30240ab13d1/V_Arsenal_KeyArt_Operator.png' }
         };
 
         let scoreBlue = 0, scoreRed = 0, currentRound = 1;
-        let matchActive = false, roundActive = false, roundTimer = 100;
+        let matchActive = false, roundActive = false, roundTimer = 180;
         let killsRegistry = {};
 
         let scene, camera, renderer, playerObj;
@@ -126,8 +137,8 @@
         let currentWeaponKey = "VANDAL";
         let ammoCount = WEAPONS.VANDAL.clip;
         let isADS = false, isCrouching = false;
+        let targetCamHeight = 2.0;
 
-        // Pixel-io Tarzı Doğrudan Başlama Tetikleyicisi
         document.getElementById("start-match-btn").onclick = () => {
             document.getElementById("setup-screen").classList.add("hidden");
             initGame();
@@ -135,17 +146,17 @@
 
         function initGame() {
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x11161b);
+            scene.background = new THREE.Color(0x161d24); // Taktiksel koyu mavi-gri arka plan
 
-            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 500);
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.getElementById("canvas-container").appendChild(renderer.domElement);
 
-            const ambient = new THREE.AmbientLight(0xffffff, 0.8);
+            const ambient = new THREE.AmbientLight(0xffffff, 0.9);
             scene.add(ambient);
-            const sun = new THREE.DirectionalLight(0xffffff, 0.6);
-            sun.position.set(10, 30, 10);
+            const sun = new THREE.DirectionalLight(0xffffff, 0.5);
+            sun.position.set(30, 60, 20);
             scene.add(sun);
 
             buildMap();
@@ -158,17 +169,22 @@
         }
 
         function buildMap() {
-            const floorGeo = new THREE.PlaneGeometry(200, 200);
-            const floorMat = new THREE.MeshStandardMaterial({ color: 0x22262e });
+            // Harita büyütüldü: 400x400 yapıldı ve renkli çimen/taktik zemin görünümü eklendi
+            const floorGeo = new THREE.PlaneGeometry(400, 400);
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x2c3b47 }); 
             const floor = new THREE.Mesh(floorGeo, floorMat);
             floor.rotation.x = -Math.PI / 2;
             scene.add(floor);
 
-            const boxGeo = new THREE.BoxGeometry(10, 8, 10);
-            const boxMat = new THREE.MeshStandardMaterial({ color: 0x3a404a });
-            for(let i = 0; i < 8; i++) {
+            // Renkli kutular (Siyah beyaz pürüzü kaldırıldı)
+            const boxColors = [0xff4655, 0x30cdff, 0xffb700, 0x4fffa7, 0xba55d3];
+            const boxGeo = new THREE.BoxGeometry(14, 12, 14);
+            
+            for(let i = 0; i < 20; i++) {
+                let randomColor = boxColors[Math.floor(Math.random() * boxColors.length)];
+                const boxMat = new THREE.MeshStandardMaterial({ color: randomColor, roughness: 0.4 });
                 const mesh = new THREE.Mesh(boxGeo, boxMat);
-                mesh.position.set((Math.random() - 0.5) * 100, 4, (Math.random() - 0.5) * 100);
+                mesh.position.set((Math.random() - 0.5) * 250, 6, (Math.random() - 0.5) * 250);
                 scene.add(mesh);
             }
         }
@@ -179,7 +195,7 @@
 
             playerObj = {
                 isBot: false, team: "BLUE", name: "Sen",
-                hp: 100, pos: new THREE.Vector3(0, 2, 45), weapon: WEAPONS[currentWeaponKey]
+                hp: 100, pos: new THREE.Vector3(0, targetCamHeight, 90), weapon: WEAPONS[currentWeaponKey]
             };
             entities.push(playerObj);
             killsRegistry[playerObj.name] = 0;
@@ -188,10 +204,10 @@
                 let name = `Düşman_${i}`;
                 killsRegistry[name] = 0;
 
-                const bodyGeo = new THREE.CylinderGeometry(0.6, 0.6, 2, 8);
+                const bodyGeo = new THREE.CylinderGeometry(0.8, 0.8, 2.5, 10);
                 const bodyMat = new THREE.MeshStandardMaterial({ color: 0xff4655 });
                 const mesh = new THREE.Mesh(bodyGeo, bodyMat);
-                mesh.position.set((i - 3) * 15, 1, -45);
+                mesh.position.set((i - 3) * 25, 1.25, -90);
                 scene.add(mesh);
 
                 entities.push({
@@ -203,10 +219,10 @@
 
         function startRound() {
             roundActive = true;
-            roundTimer = 100;
+            roundTimer = 180; // 3 Dakika Raunt Süresi
 
             playerObj.hp = 100;
-            playerObj.pos.set(0, 2, 45);
+            playerObj.pos.set(0, targetCamHeight, 90);
             camera.position.copy(playerObj.pos);
             ammoCount = playerObj.weapon.clip;
 
@@ -214,7 +230,7 @@
                 if(e.isBot) {
                     e.hp = 100;
                     e.mesh.visible = true;
-                    e.pos.set((Math.random() - 0.5) * 60, 1, -45);
+                    e.pos.set((Math.random() - 0.5) * 150, 1.25, -90);
                 }
             });
 
@@ -274,6 +290,7 @@
         }
 
         function setupControls() {
+            // Joystick
             const zone = document.getElementById("joy-zone");
             const stick = document.getElementById("joy-stick");
             let joyActive = false, startPos = { x: 0, y: 0 };
@@ -302,6 +319,7 @@
                 moveInput = { x: 0, y: 0 };
             });
 
+            // Bakış alanı
             const lookZone = document.getElementById("touch-look-zone");
             let lastLook = { x: 0, y: 0 }, lookActive = false;
 
@@ -325,12 +343,28 @@
 
             lookZone.addEventListener("touchend", () => { lookActive = false; });
 
+            // Eğilme Mekanizması Tamamen Düzeltildi
+            const crouchBtn = document.getElementById("btn-crouch");
+            crouchBtn.addEventListener("touchstart", (e) => {
+                e.preventDefault();
+                isCrouching = !isCrouching;
+                if(isCrouching) {
+                    targetCamHeight = 1.0; // Kamera yüksekliği yarıya iner
+                    crouchBtn.classList.add("active");
+                } else {
+                    targetCamHeight = 2.0; // Kamera yüksekliği normale döner
+                    crouchBtn.classList.remove("active");
+                }
+            });
+
             document.getElementById("btn-shoot").addEventListener("touchstart", (e) => { e.preventDefault(); shoot(); });
             document.getElementById("btn-reload").addEventListener("touchstart", (e) => {
                 e.preventDefault();
                 ammoCount = playerObj.weapon.clip;
                 updateHUD();
             });
+
+            // Silah Değiştirme ve Görsel Güncelleme
             document.getElementById("btn-switch").addEventListener("touchstart", (e) => {
                 e.preventDefault();
                 let keys = Object.keys(WEAPONS);
@@ -338,8 +372,12 @@
                 currentWeaponKey = keys[next];
                 playerObj.weapon = WEAPONS[currentWeaponKey];
                 ammoCount = playerObj.weapon.clip;
+                
+                // Dinamik HUD görsel değişimi
+                document.getElementById("weapon-img").style.backgroundImage = `url('${playerObj.weapon.img}')`;
                 updateHUD();
             });
+
             document.getElementById("btn-ads").addEventListener("touchstart", (e) => {
                 e.preventDefault();
                 isADS = !isADS;
@@ -357,59 +395,4 @@
         const clock = new THREE.Clock();
         function animate() {
             requestAnimationFrame(animate);
-            if (!matchActive) return;
-
-            const delta = clock.getDelta();
-
-            roundTimer -= delta;
-            if(roundTimer <= 0 && roundActive) { endRound("RED"); }
-            document.getElementById("timer").innerText = Math.floor(roundTimer);
-
-            if (playerObj.hp > 0) {
-                camera.rotation.order = "YXZ";
-                camera.rotation.y = playerRotation.yaw;
-                camera.rotation.x = playerRotation.pitch;
-
-                let forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-                let side = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-                forward.y = 0; side.y = 0;
-                forward.normalize(); side.normalize();
-
-                playerObj.pos.addScaledVector(forward, moveInput.y * delta * 10);
-                playerObj.pos.addScaledVector(side, moveInput.x * delta * 10);
-                camera.position.copy(playerObj.pos);
-            }
-
-            let enemiesAlive = 0;
-            entities.forEach(e => {
-                if (e.isBot && e.hp > 0) {
-                    enemiesAlive++;
-                    e.aiTimer += delta;
-                    if(e.aiTimer > 1) {
-                        e.aiTimer = 0;
-                        if(Math.random() < 0.15 && playerObj.hp > 0) {
-                            playerObj.hp -= 10;
-                            updateHUD();
-                            if(playerObj.hp <= 0) endRound("RED");
-                        }
-                    }
-                }
-            });
-            document.getElementById("alive-text").innerText = `1 VS ${enemiesAlive}`;
-
-            if(enemiesAlive === 0 && roundActive) endRound("BLUE");
-
-            renderer.render(scene, camera);
-        }
-
-        window.addEventListener('resize', () => {
-            if(camera && renderer) {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            }
-        });
-    </script>
-</body>
-            </html>
-        
+     
