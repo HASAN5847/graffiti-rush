@@ -2,93 +2,382 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZıpZıp Dünyası - Sunucu Seçimi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobil 3D FPS - Valorant Mobile</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0c1020;
-            color: white;
-            text-align: center;
-            padding: 50px 20px;
-            margin: 0;
-        }
-        .box {
-            border: 3px solid #00bcff;
-            padding: 30px;
-            display: inline-block;
-            border-radius: 16px;
-            background-color: #121829;
-            max-width: 500px;
-            width: 100%;
-            box-shadow: 0px 0px 25px rgba(0, 188, 255, 0.2);
-        }
-        h1 { color: #00bcff; font-size: 28px; margin-bottom: 10px; }
-        p { color: #bcc1d5; font-size: 16px; }
+        * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
+        #canvas-container { width: 100%; height: 100%; position: absolute; z-index: 1; }
         
-        select, button {
-            padding: 14px 20px;
-            font-size: 16px;
-            margin-top: 20px;
-            border-radius: 10px;
-            border: none;
-            width: 85%;
-            box-sizing: border-box;
-        }
-        select { background-color: #1a233d; color: white; border: 1px solid #00bcff; }
-        button { 
-            background-color: #00bcff; 
-            color: #0c1020; 
-            font-weight: bold; 
-            cursor: pointer; 
-            font-size: 18px;
-            transition: 0.2s;
-        }
-        button:hover { background-color: #33ccff; transform: scale(1.02); }
-        iframe { border: 3px solid #00bcff; margin-top: 20px; border-radius: 12px; width: 100%; height: 350px; }
-        .gizli { display: none; }
-        .mesaj { color: #ffeb3b; font-size: 24px; font-weight: bold; margin-top: 15px; }
+        /* Ekran Katmanları */
+        .screen { position: absolute; width: 100%; height: 100%; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(15, 25, 35, 0.95); color: #fff; }
+        .hidden { display: none !important; }
+        
+        /* Ajan Seçim Ekranı */
+        .agent-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px; }
+        .agent-card { background: #1f2326; padding: 15px; border: 2px solid #333; border-radius: 4px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .agent-card:hover, .agent-card.selected { border-color: #ff4655; background: #ff465522; }
+        .btn { margin-top: 25px; padding: 12px 35px; background: #ff4655; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* HUD Üst Alan */
+        #hud-top { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; align-items: center; background: rgba(15,25,35,0.8); padding: 5px 20px; border-radius: 4px; border-bottom: 2px solid #ff4655; color: white; font-weight: bold; pointer-events: none; }
+        .team-score { font-size: 24px; padding: 0 15px; }
+        .blue-team { color: #30cdff; }
+        .red-team { color: #ff4655; }
+        #timer { font-size: 20px; background: #111; padding: 5px 10px; border-radius: 3px; margin: 0 10px; }
+        #alive-count { font-size: 12px; opacity: 0.8; text-align: center; margin-top: 2px; }
+
+        /* Kill Feed */
+        #kill-feed { position: absolute; top: 15px; right: 15px; z-index: 5; display: flex; flex-direction: column; gap: 5px; pointer-events: none; }
+        .kill-item { background: rgba(0,0,0,0.7); padding: 4px 10px; border-radius: 3px; font-size: 12px; color: white; border-left: 4px solid #ff4655; animation: fadeOut 4s forwards; }
+
+        /* Mini Harita */
+        #minimap { position: absolute; top: 15px; left: 15px; width: 100px; height: 100px; background: rgba(15,25,35,0.7); border: 2px solid #fff; border-radius: 50%; z-index: 5; overflow: hidden; }
+        #minimap-canvas { width: 100%; height: 100%; }
+
+        /* Crosshair */
+        #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; z-index: 4; pointer-events: none; }
+        .ch-line { position: absolute; background: #00ff00; }
+        .ch-h { top: 5px; left: 0; width: 12px; height: 2px; }
+        .ch-v { top: 0; left: 5px; width: 2px; height: 12px; }
+
+        /* HUD Alt Alan */
+        #hud-bottom { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; gap: 20px; pointer-events: none; }
+        .hud-stat { background: rgba(15,25,35,0.85); color: white; padding: 10px 20px; border-radius: 4px; border: 1px solid #333; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .stat-val { font-size: 24px; color: #ff4655; }
+        #weapon-display { color: #fff; font-size: 18px; text-align: right; }
+        #ammo-display { font-size: 24px; color: #ffb700; }
+
+        /* Yetenekler */
+        #ability-bar { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; gap: 10px; pointer-events: none; }
+        .ability-slot { width: 50px; height: 50px; background: rgba(15,25,35,0.9); border: 1px solid #555; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #fff; font-weight: bold; }
+        .ability-slot.ult { border-color: #ffb700; background: rgba(40,30,10,0.9); }
+
+        /* Mobil Kontroller */
+        .joystick-zone { position: absolute; bottom: 20px; left: 20px; width: 140px; height: 140px; background: rgba(255,255,255,0.05); border-radius: 50%; z-index: 6; touch-action: none; }
+        .joystick-stick { position: absolute; top: 45px; left: 45px; width: 50px; height: 50px; background: rgba(255,255,255,0.3); border-radius: 50%; }
+        
+        .btn-game { position: absolute; z-index: 6; background: rgba(15,25,35,0.85); color: white; border: 1px solid #444; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 50%; touch-action: none; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .btn-game:active { background: #ff4655; }
+        #btn-shoot { bottom: 40px; right: 140px; width: 80px; height: 80px; background: rgba(255, 70, 85, 0.7); font-size: 16px; border: 2px solid #ff4655; }
+        #btn-ads { bottom: 130px; right: 150px; width: 55px; height: 55px; font-size: 12px; }
+        #btn-jump { bottom: 110px; right: 30px; width: 60px; height: 60px; font-size: 12px; }
+        #btn-crouch { bottom: 30px; right: 30px; width: 60px; height: 60px; font-size: 12px; }
+        #btn-reload { bottom: 180px; right: 40px; width: 55px; height: 55px; font-size: 12px; background: #333; }
+        #btn-switch { bottom: 245px; right: 45px; width: 50px; height: 50px; font-size: 11px; background: #222; }
+
+        /* Bilgilendirme Ekranları */
+        #round-screen { background: rgba(0,0,0,0.8); font-size: 32px; letter-spacing: 2px; text-transform: uppercase; font-weight: bold; pointer-events: none; transition: 0.3s; }
+        #mvp-screen { text-align: center; }
+        .mvp-title { font-size: 48px; color: #ffb700; margin-bottom: 20px; font-weight: bold; }
+
+        @keyframes fadeOut { 0% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
     </style>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
-    <div class="box">
-        <!-- 1. EKRAAN: Şehir Seçme -->
-        <div id="ekran1">
-            <h1>🎮 Sunucu Bölgesi</h1>
-            <p>ZıpZıp Dünyası'na bağlanıyorsunuz. Ping değerinizin düşmesi için lütfen bulunduğunuz şehri seçin:</p>
-            
-            <select id="sehirSec">
-                <option value="İstanbul">İstanbul</option>
-                <option value="Ankara">Ankara</option>
-                <option value="İzmir">İzmir</option>
-                <option value="Bursa">Bursa</option>
-                <option value="Antalya">Antalya</option>
-            </select>
-            <br>
-            <button onclick="haritayiAc()">OYUNA BAĞLAN</button>
-        </div>
+    <div id="canvas-container"></div>
 
-        <!-- 2. EKRAN: Harita ve Sürpriz Mesaj -->
-        <div id="ekran2" class="gizli">
-            <h1>Buldum Seni! 🎯</h1>
-            <div class="mesaj" id="yazi">burası tanıdıkmi xd</div>
-            <div id="haritaYeri"></div>
+    <!-- 1. AJAN SEÇİM EKRANI -->
+    <div id="setup-screen" class="screen">
+        <h2>VALORANT MOBILE</h2>
+        <p style="margin-top: 5px; opacity: 0.7;">Bir Ajan Seçerek Maçı Başlatın</p>
+        <div class="agent-grid" id="agent-selector"></div>
+        <button class="btn" id="start-match-btn">Maçı Başlat</button>
+    </div>
+
+    <!-- 2. RAUNT BAŞLANGIÇ / BİTİŞ EKRANI -->
+    <div id="round-screen" class="screen hidden">
+        <div id="round-title">RAUNT 1</div>
+        <div id="round-subtitle" style="font-size: 18px; margin-top: 10px; color: #aaa;">HAZIRLANIN</div>
+    </div>
+
+    <!-- 3. MAÇ SONU MVP EKRANI -->
+    <div id="mvp-screen" class="screen hidden">
+        <div class="mvp-title">MAÇ BİTTİ</div>
+        <h2 id="winner-team" style="margin-bottom: 10px;">MAVİ TAKIM KAZANDI</h2>
+        <div style="background: #1f2326; padding: 20px; border-radius: 4px; min-width: 300px; border: 1px solid #ffb700;">
+            <p style="font-size: 14px; opacity: 0.6;">MAÇIN EN İYİ OYUNCUSU</p>
+            <h1 id="mvp-name" style="color: #ffb700; margin: 10px 0;">JETT</h1>
+            <p id="mvp-stats">Skor: 14 Öldürme</p>
+        </div>
+        <button class="btn" onclick="location.reload()">Yeniden Oyna</button>
+    </div>
+
+    <!-- OYUN HUD KATMANI -->
+    <div id="minimap"><canvas id="minimap-canvas"></canvas></div>
+    
+    <div id="hud-top">
+        <span class="blue-team" id="score-blue">0</span>
+        <span style="opacity:0.5;">-</span>
+        <span class="red-team" id="score-red">0</span>
+        <div id="timer">1:40</div>
+        <div>
+            <div id="alive-text">5 VS 5</div>
         </div>
     </div>
 
-    <script>
-        function haritayiAc() {
-            var secilen = document.getElementById("sehirSec").value;
-            
-            document.getElementById("ekran1").style.display = "none";
-            document.getElementById("ekran2").style.display = "block";
-            
-            // Seçtiği şehri haritada açıyoruz
-            var haritaUrl = "https://maps.google.com/maps?q=" + encodeURIComponent(secilen) + "&t=&z=12&ie=UTF-8&iwloc=&output=embed";
-            document.getElementById("haritaYeri").innerHTML = '<iframe src="' + haritaUrl + '"></iframe>';
-        }
-    </script>
+    <div id="kill-feed"></div>
+    <div id="crosshair"><div class="ch-line ch-h"></div><div class="ch-line ch-v"></div></div>
 
-</body>
-</html>
+    <div id="ability-bar">
+        <div class="ability-slot" id="ab-1">Q<br><span style="font-size:8px" id="ab-1-n">Yetenek</span></div>
+        <div class="ability-slot" id="ab-2">E<br><span style="font-size:8px" id="ab-2-n">Yetenek</span></div>
+        <div class="ability-slot" id="ab-3">C<br><span style="font-size:8px" id="ab-3-n">Yetenek</span></div>
+        <div class="ability-slot ult" id="ab-4">X<br><span style="font-size:8px" id="ab-4-n">ULTI</span></div>
+    </div>
+
+    <div id="hud-bottom">
+        <div class="hud-stat">CAN <div class="stat-val" id="hp-display">100</div></div>
+        <div class="hud-stat">ZIRH <div class="stat-val" style="color:#30cdff" id="armor-display">50</div></div>
+        <div class="hud-stat" style="min-width: 150px;">
+            <div id="weapon-display">VANDAL</div>
+            <div id="ammo-display">30/90</div>
+        </div>
+    </div>
+
+    <!-- MOBIL DOKUNMATİK KONTROLLER -->
+    <div class="joystick-zone" id="joy-zone"><div class="joystick-stick" id="joy-stick"></div></div>
+    <div class="btn-game" id="btn-shoot">ATEŞ</div>
+    <div class="btn-game" id="btn-ads">ADS</div>
+    <div class="btn-game" id="btn-jump">ZIPLA</div>
+    <div class="btn-game" id="btn-crouch">EĞİL</div>
+    <div class="btn-game" id="btn-reload">R</div>
+    <div class="btn-game" id="btn-switch">SİLAH</div>
+
+    <script>
+        // --- 1. SİLAH VE AJAN VERİLERİ (VERİ TABANI) ---
+        const WEAPONS = {
+            KNIFE: { name: "Knife", damage: 50, recoil: 0, fireRate: 400, clip: 1, reload: 0, hsMult: 1, type: "melee" },
+            CLASSIC: { name: "Classic", damage: 26, recoil: 1.2, fireRate: 300, clip: 12, reload: 1500, hsMult: 3, type: "pistol" },
+            GHOST: { name: "Ghost", damage: 30, recoil: 0.8, fireRate: 400, clip: 15, reload: 1500, hsMult: 3, type: "pistol" },
+            SHERIFF: { name: "Sheriff", damage: 55, recoil: 2.5, fireRate: 200, clip: 6, reload: 2000, hsMult: 3, type: "pistol" },
+            SPECTRE: { name: "Spectre", damage: 26, recoil: 1.1, fireRate: 800, clip: 30, reload: 2200, hsMult: 3, type: "smg" },
+            VANDAL: { name: "Vandal", damage: 40, recoil: 1.8, fireRate: 600, clip: 25, reload: 2500, hsMult: 4, type: "rifle" },
+            PHANTOM: { name: "Phantom", damage: 39, recoil: 1.5, fireRate: 660, clip: 30, reload: 2500, hsMult: 4, type: "rifle" },
+            OPERATOR: { name: "Operator", damage: 150, recoil: 5.0, fireRate: 50, clip: 5, reload: 3500, hsMult: 3, type: "sniper" },
+            OUTLAW: { name: "Outlaw", damage: 140, recoil: 4.0, fireRate: 100, clip: 2, reload: 2800, hsMult: 3, type: "sniper" }
+        };
+
+        const AGENTS = [
+            { name: "Jett", ab1: "Dash", ab2: "Updraft", ab3: "Smoke", ab4: "Blade Storm", color: 0x66cdaa },
+            { name: "Phoenix", ab1: "Flash", ab2: "Wall", ab3: "Molotov", ab4: "Run It Back", color: 0xff4500 },
+            { name: "Sova", ab1: "Recon", ab2: "Drone", ab3: "Shock Dart", ab4: "Hunter's Fury", color: 0x1e90ff },
+            { name: "Reyna", ab1: "Leer", ab2: "Heal", ab3: "Dismiss", ab4: "Empress", color: 0xba55d3 },
+            { name: "Sage", ab1: "Heal", ab2: "Barrier", ab3: "Slow Orb", ab4: "Resurrection", color: 0x7fffd4 },
+            { name: "Omen", ab1: "Paranoia", ab2: "Teleport", ab3: "Dark Cover", ab4: "From the Shadows", color: 0x4b0082 },
+            { name: "Brimstone", ab1: "Stim", ab2: "Incendiary", ab3: "Sky Smoke", ab4: "Orbital Strike", color: 0x8b4513 },
+            { name: "Killjoy", ab1: "Alarmbot", ab2: "Turret", ab3: "Nanoswarm", ab4: "Lockdown", color: 0xffd700 }
+        ];
+
+        // --- 2. GLOBAL OYUN DEĞİŞKENLERİ ---
+        let selectedAgent = AGENTS[0];
+        let scoreBlue = 0, scoreRed = 0, currentRound = 1;
+        let matchActive = false, roundActive = false, roundTimer = 100;
+        let killsRegistry = {}; // MVP takibi için skor kaydı
+
+        // Three.js Değişkenleri
+        let scene, camera, renderer;
+        let playerObj;
+        let entities = []; // Tüm oyuncular ve botlar nesnesi
+        let mapBoxes = []; // Çarpışma kutuları
+
+        // Kontrol Değişkenleri
+        let moveInput = { x: 0, y: 0 };
+        let lookInput = { x: 0, y: 0 };
+        let isADS = false, isCrouching = false;
+        let playerVelocity = new THREE.Vector3();
+        let playerRotation = { yaw: 0, pitch: 0 };
+        let currentWeaponKey = "VANDAL";
+        let ammoCount = WEAPONS.VANDAL.clip;
+
+        // --- 3. KURULUM VE GİRİŞ EKRANI ---
+        const agentSelector = document.getElementById("agent-selector");
+        AGENTS.forEach((agent, index) => {
+            const card = document.createElement("div");
+            card.className = `agent-card ${index === 0 ? 'selected' : ''}`;
+            card.innerHTML = `<h3>${agent.name}</h3><p style="font-size:10px; opacity:0.6; margin-top:5px;">Ulti: ${agent.ab4}</p>`;
+            card.onclick = () => {
+                document.querySelectorAll(".agent-card").forEach(c => c.classList.remove("selected"));
+                card.classList.add("selected");
+                selectedAgent = agent;
+            };
+            agentSelector.appendChild(card);
+        });
+
+        document.getElementById("start-match-btn").onclick = () => {
+            document.getElementById("setup-screen").classList.add("hidden");
+            initGame();
+        };
+
+        // --- 4. ENGINE VE DÜNYA İLKLENDİRME ---
+        function initGame() {
+            // Three.js Kurulumu
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x161c24);
+            scene.fog = new THREE.FogExp2(0x161c24, 0.015);
+
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById("canvas-container").appendChild(renderer.domElement);
+
+            // Işıklandırma
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(20, 40, 20);
+            scene.add(dirLight);
+
+            // Haritayı İnşa Et (3D Alan)
+            buildMap();
+
+            // Karakterleri Oluştur (1 Oyuncu + 9 Bot)
+            spawnEntities();
+
+            // UI Güncelleme
+            updateWeaponHUD();
+            setupInputListeners();
+
+            // Maçı Başlat
+            matchActive = true;
+            startRound();
+
+            // Döngüyü Çalıştır
+            animate();
+        }
+
+        // --- 5. 3D HARİTA TASARIMI (BOMBA ALANLARI VE DUVARLAR) ---
+        function buildMap() {
+            // Zemin
+            const floorGeo = new THREE.PlaneGeometry(300, 300);
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x2b323c });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            scene.add(floor);
+
+            // Rastgele Bloklar / Koridorlar / Kutular Oluştur
+            const boxMat = new THREE.MeshStandardMaterial({ color: 0x3f4754 });
+            const structures = [
+                // A Sitesi Alanı
+                { x: 60, z: 60, w: 20, h: 15, d: 20, color: 0x4a5568 },
+                { x: 60, z: 40, w: 8, h: 6, d: 8, color: 0xd97706 }, // A Kutusu
+                // B Sitesi Alanı
+                { x: -60, z: -60, w: 25, h: 15, d: 25, color: 0x4a5568 },
+                { x: -60, z: -40, w: 8, h: 6, d: 8, color: 0xd97706 }, // B Kutusu
+                // Orta Alan ve Duvarlar
+                { x: 0, z: 0, w: 40, h: 20, d: 10, color: 0x2d3748 },
+                { x: -30, z: 20, w: 10, h: 12, d: 50, color: 0x2d3748 },
+                { x: 30, z: -20, w: 10, h: 12, d: 50, color: 0x2d3748 }
+            ];
+
+            structures.forEach(s => {
+                const geo = new THREE.BoxGeometry(s.w, s.h, s.d);
+                const mat = new THREE.MeshStandardMaterial({ color: s.color || 0x3f4754 });
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.set(s.x, s.h / 2, s.z);
+                scene.add(mesh);
+                mapBoxes.push(mesh); // Çarpışma ve yapay zeka harita verisi
+            });
+        }
+
+        // --- 6. TAKIMLAR VE ENTITY YÖNETİMİ ---
+        function spawnEntities() {
+            entities = [];
+            killsRegistry = {};
+
+            // Kullanıcı (Oyuncu) Nesnesi
+            playerObj = {
+                isBot: false,
+                team: "BLUE",
+                name: "Sen (" + selectedAgent.name + ")",
+                agent: selectedAgent,
+                hp: 100,
+                armor: 50,
+                pos: new THREE.Vector3(0, 2, 100), // Mavi Spawn
+                weapon: WEAPONS[currentWeaponKey]
+            };
+            entities.push(playerObj);
+            killsRegistry[playerObj.name] = 0;
+
+            // Mavi Takım Botları (4 Tane)
+            for (let i = 1; i <= 4; i++) {
+                let botAgent = AGENTS[Math.floor(Math.random() * AGENTS.length)];
+                let name = `Mavi_Bot_${i}_(${botAgent.name})`;
+                entities.push(createBotData("BLUE", name, botAgent, new THREE.Vector3((i - 2.5) * 10, 2, 100)));
+            }
+
+            // Kırmızı Takım Botları (5 Tane)
+            for (let i = 1; i <= 5; i++) {
+                let botAgent = AGENTS[Math.floor(Math.random() * AGENTS.length)];
+                let name = `Kirmizi_Bot_${i}_(${botAgent.name})`;
+                entities.push(createBotData("RED", name, botAgent, new THREE.Vector3((i - 3) * 10, 2, -100)));
+            }
+        }
+
+        function createBotData(team, name, agent, startPos) {
+            killsRegistry[name] = 0;
+            // Botların haritada görünebilmesi için basit 3D kapsül gövdeler
+            const bodyGeo = new THREE.CapsuleGeometry(0.8, 2, 4, 8);
+            const bodyMat = new THREE.MeshStandardMaterial({ color: team === "BLUE" ? 0x30cdff : 0xff4655 });
+            const mesh = new THREE.Mesh(bodyGeo, bodyMat);
+            mesh.position.copy(startPos);
+            scene.add(mesh);
+
+            return {
+                isBot: true,
+                team: team,
+                name: name,
+                agent: agent,
+                hp: 100,
+                armor: 50,
+                pos: startPos,
+                mesh: mesh,
+                weapon: WEAPONS.VANDAL,
+                ammo: 30,
+                target: null,
+                aiTimer: 0
+            };
+        }
+
+        // --- 7. VALORANT TAKTİKSEL OYUN DÖNGÜSÜ (ROUND / TUR MANTIĞI) ---
+        function startRound() {
+            roundActive = true;
+            roundTimer = 100;
+            
+            // Oyuncu Konum Sıfırlama
+            playerObj.hp = 100;
+            playerObj.armor = 50;
+            playerObj.pos.set(0, 2, 80);
+            camera.position.copy(playerObj.pos);
+            ammoCount = playerObj.weapon.clip;
+
+            // Botları sıfırla ve canlandır
+            entities.forEach(e => {
+                e.hp = 100;
+                if (e.isBot) {
+                    e.pos.set((Math.random() - 0.5) * 30, 2, e.team === "BLUE" ? 80 : -80);
+                    e.mesh.position.copy(e.pos);
+                    e.mesh.visible = true;
+                }
+            });
+
+            // Ekran Bildirimi
+            const screen = document.getElementById("round-screen");
+            const title = document.getElementById("round-title");
+            title.innerText = `RAUNT ${currentRound}`;
+            screen.classList.remove("hidden");
+            setTimeout(() => screen.classList.add("hidden"), 2000);
+
+            updateWeaponHUD();
+        }
+
+        function endRound(winnerTeam) {
+            roundActive = false;
+            if (winnerTeam === "BLUE") scoreBlue++;
+            else scoreRed++;
+
+            document.getElementById("score-blue").innerText = scoreBlue;
+        
