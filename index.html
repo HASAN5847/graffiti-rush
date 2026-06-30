@@ -9,15 +9,17 @@
         body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; cursor: default; }
         #canvas-container { width: 100%; height: 100%; position: absolute; z-index: 1; }
         
-        .screen { position: absolute; width: 100%; height: 100%; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
-        #setup-screen { background: #0f1923; }
+        /* Kesinlikle Üstte Duracak Giriş Ekranı */
+        .screen { position: absolute; width: 100%; height: 100%; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
+        #setup-screen { background: #0f1923; pointer-events: auto; }
         .hidden { display: none !important; }
         
-        .menu-card { background: #172330; padding: 35px; border-radius: 12px; border: 3px solid #ff4655; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        .menu-card { background: #172330; padding: 35px; border-radius: 12px; border: 3px solid #ff4655; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.8); pointer-events: auto; }
         .game-title { font-size: 46px; color: #ff4655; font-weight: 900; letter-spacing: 5px; margin-bottom: 5px; text-shadow: 0 0 15px rgba(255, 70, 85, 0.6); }
         .game-subtitle { font-size: 14px; opacity: 0.7; margin-bottom: 30px; letter-spacing: 2px; }
         
-        .btn { padding: 18px 60px; background: #ff4655; color: white; border: none; font-weight: bold; font-size: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; box-shadow: 0 5px 20px rgba(255, 70, 85, 0.5); }
+        /* Garanti Tıklanan Buton */
+        .btn { padding: 18px 60px; background: #ff4655; color: white; border: none; font-weight: bold; font-size: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; box-shadow: 0 5px 20px rgba(255, 70, 85, 0.5); pointer-events: auto; display: inline-block; position: relative; z-index: 10000; }
         .btn:active { background: #cc323f; }
         
         #hud-top { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; align-items: center; background: rgba(15,25,35,0.8); padding: 5px 20px; border-radius: 4px; border-bottom: 2px solid #ff4655; color: white; font-weight: bold; pointer-events: none; }
@@ -34,7 +36,6 @@
         
         #weapon-card { background: rgba(15,25,35,0.85); border: 1px solid #333; border-radius: 4px; padding: 10px 20px; display: flex; flex-direction: column; align-items: center; min-width: 130px; }
 
-        /* Mobil Bölge Katmanları (PC için görünmez engelleme yapmaz) */
         .joystick-zone { position: absolute; bottom: 15px; left: 15px; width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 50%; z-index: 6; touch-action: none; border: 1px solid rgba(255,255,255,0.1); }
         .joystick-stick { position: absolute; top: 40px; left: 40px; width: 40px; height: 40px; background: rgba(255,255,255,0.3); border-radius: 50%; }
         
@@ -50,7 +51,6 @@
         #btn-switch { bottom: 200px; right: 30px; width: 40px; height: 40px; font-size: 9px; background: #222; }
 
         #round-screen { background: rgba(0,0,0,0.8); font-size: 24px; font-weight: bold; pointer-events: none; z-index: 12; }
-        
         #pc-info { position: absolute; top: 15px; left: 15px; color: #fff; font-size: 11px; z-index: 5; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 4px; pointer-events: none; }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -60,11 +60,12 @@
     <div id="canvas-container"></div>
     <div id="touch-look-zone"></div>
 
+    <!-- Yenilenen Giriş Ekranı -->
     <div id="setup-screen" class="screen">
         <div class="menu-card">
             <h1 class="game-title">HOLARANT</h1>
             <p class="game-subtitle">MOBILE & PC EDITION</p>
-            <button class="btn" id="start-match-btn">OYUNA BAŞLA</button>
+            <button class="btn" id="start-match-btn">MAÇA BAŞLA</button>
         </div>
     </div>
 
@@ -150,15 +151,23 @@
         let isADS = false, isCrouching = false;
         let targetCamHeight = 2.0;
 
+        // %100 Çalışma Garantili Buton Tetikleyicisi
         const startBtn = document.getElementById("start-match-btn");
-        const triggerStart = () => {
+        const triggerStart = (e) => {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
             if (matchActive) return;
-            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+            
+            if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume(); }
+            document.getElementById("setup-screen").style.display = "none";
             document.getElementById("setup-screen").classList.add("hidden");
+            
             initGame();
         };
+
+        // Tüm tarayıcı ve platformların tetikleyicilerini bağla
+        startBtn.onclick = triggerStart;
         startBtn.addEventListener("click", triggerStart);
-        startBtn.addEventListener("touchstart", (e) => { e.preventDefault(); triggerStart(); });
+        startBtn.addEventListener("touchstart", triggerStart, { passive: false });
 
         function initGame() {
             scene = new THREE.Scene();
@@ -268,7 +277,6 @@
             isADS = !isADS; camera.fov = isADS ? 35 : 70; camera.updateProjectionMatrix();
         }
 
-        // Mobil Dokunmatik Sistem
         function setupMobileControls() {
             const zone = document.getElementById("joy-zone"); const stick = document.getElementById("joy-stick");
             let joyActive = false, startPos = { x: 0, y: 0 };
@@ -298,7 +306,6 @@
             document.getElementById("btn-ads").addEventListener("touchstart", (e) => { e.preventDefault(); toggleADS(); });
         }
 
-        // PC Klavye & Fare Sistemi
         function setupPCControls() {
             window.addEventListener('keydown', (e) => {
                 let k = e.key.toLowerCase();
@@ -312,17 +319,9 @@
                 if(k === 'a') pcKeys.a = false; if(k === 'd') pcKeys.d = false;
             });
 
-            // Ekrana tıklayınca fareyi kilitleme (PC için kusursuz FPS dönüşü)
             const lookZone = document.getElementById("touch-look-zone");
             lookZone.addEventListener('click', () => { if(matchActive) lookZone.requestPointerLock(); });
             
             window.addEventListener('mousemove', (e) => {
                 if (document.pointerLockElement === lookZone) {
-                    playerRotation.yaw -= e.movementX * 0.0025;
-                    playerRotation.pitch -= e.movementY * 0.0025;
-                    playerRotation.pitch = Math.max(-Math.PI/2.5, Math.min(Math.PI/2.5, playerRotation.pitch));
-                }
-            });
-
-            window.addEventListener('mousedown', (e) => {
-                i
+        
